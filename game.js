@@ -1068,15 +1068,16 @@ addEventListener('keydown', e => {
   }
 });
 
-// High-precision, zero-latency touch swipe gestures for mobile
-let tx0 = null, ty0 = null, tTime0 = 0;
-const SWIPE_THRESH = 20;
+// Balanced, reliable mobile touch swipe gesture engine
+let tx0 = null, ty0 = null, touchHandled = false;
+const SWIPE_X_THRESH = 36; // balanced horizontal lane swipe (prevents accidental lane shifts)
+const SWIPE_Y_THRESH = 32; // distinct vertical swipe (swipe up to jump, swipe down to slide)
 
 addEventListener('touchstart', e => {
   if (e.touches && e.touches.length > 0) {
     tx0 = e.touches[0].clientX;
     ty0 = e.touches[0].clientY;
-    tTime0 = performance.now();
+    touchHandled = false;
   }
 }, { passive: true });
 
@@ -1084,38 +1085,43 @@ addEventListener('touchmove', e => {
   if (st !== 'play' || tx0 === null || ty0 === null) return;
   if (paused || S.ready > 0) return;
   
+  if (touchHandled) {
+    if (e.cancelable) e.preventDefault();
+    return;
+  }
+
   const cx = e.touches[0].clientX;
   const cy = e.touches[0].clientY;
   const dx = cx - tx0;
   const dy = cy - ty0;
   const absX = Math.abs(dx);
   const absY = Math.abs(dy);
-  
-  if (Math.max(absX, absY) >= SWIPE_THRESH) {
+
+  if (absX >= SWIPE_X_THRESH && absX > absY * 0.9) {
     if (e.cancelable) e.preventDefault();
-    if (absX > absY) {
-      mvL(dx > 0 ? 1 : -1);
+    mvL(dx > 0 ? 1 : -1);
+    touchHandled = true;
+  } else if (absY >= SWIPE_Y_THRESH && absY > absX * 0.9) {
+    if (e.cancelable) e.preventDefault();
+    if (dy < 0) {
+      jump(); // Only swipe UP jumps
     } else {
-      if (dy < 0) jump();
-      else slide();
+      slide(); // Swipe DOWN slides
     }
-    tx0 = cx;
-    ty0 = cy;
+    touchHandled = true;
   }
 }, { passive: false });
 
-addEventListener('touchend', e => {
-  if (st === 'play' && tx0 !== null && ty0 !== null && !paused && S.ready <= 0) {
-    const elapsed = performance.now() - tTime0;
-    if (elapsed < 250 && e.changedTouches && e.changedTouches.length > 0) {
-      const dist = Math.hypot(e.changedTouches[0].clientX - tx0, e.changedTouches[0].clientY - ty0);
-      if (dist < 14) {
-        jump();
-      }
-    }
-  }
+addEventListener('touchend', () => {
   tx0 = null;
   ty0 = null;
+  touchHandled = false;
+}, { passive: true });
+
+addEventListener('touchcancel', () => {
+  tx0 = null;
+  ty0 = null;
+  touchHandled = false;
 }, { passive: true });
 
 function pause(p) {
