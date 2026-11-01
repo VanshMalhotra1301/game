@@ -379,8 +379,8 @@ function pick(type, i, x, z) {
 }
 
 /* ---------- HIGHER FREQUENCY DYNAMIC OBSTACLE SPAWNER ---------- */
-function spawn() {
-  const d = S.dist, z = ZB, L = R() * 3 | 0, r = R();
+function spawn(customZ) {
+  const d = S.dist, z = customZ !== undefined ? customZ : -105, L = R() * 3 | 0, r = R();
 
   // Milestone compile boss gates every 1000m
   if (d >= S.nb) {
@@ -444,14 +444,6 @@ function spawn() {
   return 14;
 }
 
-// Preserve spawn depth progression
-const spawnPattern = spawn;
-spawn = function() {
-  const spacing = spawnPattern();
-  ZB -= spacing;
-  return spacing;
-};
-
 /* ---------- PARTICLES & EFFECTS (OPTIMIZED NO-GC) ---------- */
 const PN = 240, pp = new Float32Array(PN * 3).fill(-99), pc = new Float32Array(PN * 3), PV = new Float32Array(PN * 4);
 let pi = 0;
@@ -485,7 +477,15 @@ const SPEED_MILESTONES = [
   { score: 1400, name: 'TURBO SPRINT! ⚡ 1.6X' },
   { score: 2400, name: 'OVERCLOCK ENGAGED! ⚡ 1.8X' },
   { score: 3800, name: 'LIGHTSPEED MATRIX! ⚡ 2.0X' },
-  { score: 5500, name: 'MAX FREQUENCY! ⚡ 2.2X' }
+  { score: 5500, name: 'HYPERDRIVE ACTIVE! ⚡ 2.2X' },
+  { score: 7500, name: 'QUANTUM VELOCITY! ⚡ 2.4X' },
+  { score: 10000, name: 'WARP CODER ENGAGED! ⚡ 2.6X' },
+  { score: 14000, name: 'TRANSCENDENCE MATRIX! ⚡ 2.8X' },
+  { score: 19000, name: 'CYBER TITAN SPEED! ⚡ 3.0X' },
+  { score: 25000, name: 'ALGORITHMIC GODMODE! ⚡ 3.2X' },
+  { score: 32000, name: 'INFINITE LOOP BREAKOUT! ⚡ 3.4X' },
+  { score: 40000, name: 'LIGHTSPEED SYNTAX! ⚡ 3.6X' },
+  { score: 50000, name: 'BENNETT APEX RUNNER! ⚡ 4.0X' }
 ];
 
 const newS = () => ({
@@ -560,9 +560,10 @@ function start() {
 
   clearAll();
   S = newS();
-  ZB = -35;
-  spawn();
-  ZB = -90;
+  spawn(-35);
+  spawn(-55);
+  spawn(-75);
+  spawn(-95);
   P.visible = true;
   P.position.set(0, 0, 0);
   st = 'play';
@@ -754,21 +755,23 @@ function step(dt) {
   }
   if (S.fv > 0) S.fv = Math.max(0, S.fv - dt);
 
-  // Progressive speed scaling (Subway Surfers & Temple Run model)
-  const scoreFactor = Math.min(18, Math.sqrt(Math.max(0, S.score)) * 0.28);
-  const distFactor = Math.min(3.5, S.dist * 0.0025);
-  const base = 16.5 + scoreFactor + distFactor + (S.col > 0 ? 2 : 0);
-  const sp = S.sp = Math.min(38, base * (S.queue > 0 ? 1.45 : 1));
+  // Subway Surfers progressive continuous speed scaling (no flatline cap)
+  const scoreRoot = Math.sqrt(Math.max(0, S.score));
+  const earlyBoost = Math.min(18, scoreRoot * 0.28);
+  const continuousClimb = Math.log(1 + Math.max(0, S.score) / 1400) * 4.5 + (S.score * 0.0001);
+  const distFactor = Math.min(5, S.dist * 0.001);
+  const base = 16.5 + earlyBoost + continuousClimb + distFactor + (S.col > 0 ? 2 : 0);
+  const sp = S.sp = base * (S.queue > 0 ? 1.45 : 1);
   S.dist += sp * dt;
   if (S.fv > 0) S.bonus += sp * dt;
 
-  // Faster obstacle spacing rhythm
+  // Adaptive obstacle spacing rhythm
   S.wait -= sp * dt;
-  if (S.wait <= 0) S.wait = spawn() + Math.max(2, 9 - S.dist / 180);
+  if (S.wait <= 0) S.wait = spawn() + Math.max(3.5, 9 - S.dist / 220);
 
-  // Snappy lane switching
+  // Snappy lane switching (responsive at high velocity)
   const tx = LX[S.lane];
-  P.position.x += (tx - P.position.x) * Math.min(1, dt * 20);
+  P.position.x += (tx - P.position.x) * Math.min(1, dt * (20 + (sp - 16.5) * 0.16));
 
   if (S.air) {
     S.vy -= 39 * dt;
@@ -812,7 +815,8 @@ function step(dt) {
     }
   }
 
-  // Obstacle collision checks
+  // Obstacle collision checks (with velocity-adaptive hit box to prevent tunneling)
+  const hitWindow = o => o.hz + Math.max(.35, sp * dt * .75);
   for (const o of OB) {
     if (o.k == 'gate' && !o.pass && o.z > 1.4) {
       o.pass = 1;
@@ -822,7 +826,7 @@ function step(dt) {
         snd(880, .3, 'sine', .06, 600);
       }
     }
-    if (o.dead || Math.abs(o.z) > o.hz + .35) continue;
+    if (o.dead || Math.abs(o.z) > hitWindow(o)) continue;
     let h = false;
     if (o.k == 'pit') h = py < .3;
     else if (o.k == 'high') h = !(sl && py < .3);
@@ -839,10 +843,11 @@ function step(dt) {
     if (st != 'play') return;
   }
 
-  // Coin pickups
+  // Coin pickups (adaptive z-window for high velocity)
+  const pickZ = Math.max(1.1, sp * dt * .8);
   for (let i = CO.length - 1; i >= 0; i--) {
     const c = CO[i];
-    if (Math.abs(c.z) < 1.1 && Math.abs(c.x - px) < 1.2 && Math.abs(c.y - (py + 1)) < 1.6) {
+    if (Math.abs(c.z) < pickZ && Math.abs(c.x - px) < 1.2 && Math.abs(c.y - (py + 1)) < 1.6) {
       S.coins++;
       S.bonus += S.fv > 0 ? 30 : 10;
       snd(1200 + Math.min(S.coins, 30) * 15, .05, 'sine', .04);
@@ -857,7 +862,7 @@ function step(dt) {
     const k = PK[i];
     k.g.rotation.y += dt * 3;
     k.g.position.y = 1.3 + Math.sin(S.t * 4 + i) * .2;
-    if (Math.abs(k.z) < 1.1 && Math.abs(k.x - px) < 1.3 && py < 2) {
+    if (Math.abs(k.z) < pickZ && Math.abs(k.x - px) < 1.3 && py < 2) {
       take(k);
       sc.remove(k.g);
       PK.splice(i, 1);
@@ -867,13 +872,19 @@ function step(dt) {
   // Milestones & score
   S.score = Math.floor(S.dist + S.bonus);
 
-  // Subway Surfers / Temple Run progressive speed milestones
+  // Subway Surfers progressive speed milestones (keeps escalating)
   if (S.speedTier < SPEED_MILESTONES.length && S.score >= SPEED_MILESTONES[S.speedTier].score) {
     const tier = SPEED_MILESTONES[S.speedTier];
     S.speedTier++;
     ban(tier.name, '#00ff88');
     flash('#00ff88');
-    snd(580 + S.speedTier * 120, .25, 'sine', .07, 260);
+    snd(580 + Math.min(S.speedTier, 10) * 60, .25, 'sine', .07, 260);
+  } else if (S.speedTier >= SPEED_MILESTONES.length && S.score >= 50000 + (S.speedTier - SPEED_MILESTONES.length + 1) * 10000) {
+    S.speedTier++;
+    const mult = (4.0 + (S.speedTier - SPEED_MILESTONES.length) * 0.25).toFixed(1);
+    ban(`APEX OVERCLOCK ⚡ ${mult}X`, '#00ff88');
+    flash('#00ff88');
+    snd(980, .25, 'sine', .08, 300);
   }
 
   if (S.score >= S.nc) {
@@ -965,7 +976,7 @@ function world(dt, sp) {
 
   // Smooth camera following with dynamic speed FOV expansion
   const sh = S.shake * .5;
-  const speedFov = Math.min(8, Math.max(0, (S.sp - 16.5) * 0.4));
+  const speedFov = Math.min(14, Math.max(0, (S.sp - 16.5) * 0.32));
   const tf = (cam.aspect < .8 ? 76 : 65) + speedFov + (S.fv > 0 ? 8 : 0) + (S.queue > 0 ? 8 : 0);
   cam.fov += (tf - cam.fov) * Math.min(1, dt * 5);
   cam.updateProjectionMatrix();
