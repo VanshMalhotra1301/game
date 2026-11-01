@@ -42,6 +42,7 @@
   </div>
 
   <div class="arcade-tools">
+    <button class="tool-btn" id="btn-top-lb"><span>CHAMPIONS</span> 🏆</button>
     <button class="tool-btn highlight" id="btn-guide"><span>GUIDE</span> ℹ️</button>
     <button class="tool-btn" id="btn-kiosk-touch"><span>TOUCH</span> 📱</button>
     <button class="tool-btn" id="btn-fs"><span>FULLSCREEN</span> ⛶</button>
@@ -49,7 +50,7 @@
   </div>
 </header>
 
-<!-- WELCOME / ARCADE STANDBY SCREEN -->
+<!-- CLEAN, FOCUSED LANDING / WELCOME SCREEN -->
 <div id="menu" class="scr on">
   <div class="hero">
     <div class="stall-tag">OFFICIAL CODING ARCADE · STALL SHOWCASE</div>
@@ -64,12 +65,12 @@
     <div class="tagline">Think Fast. Code Smart. Survive the Bugs.</div>
     <div class="powered-by">Powered by <strong>GeeksforGeeks</strong> | Bennett University Coding Club</div>
 
-    <!-- Campus Live Record Badge -->
+    <!-- Campus Live Record Badge (Shows real player scores only) -->
     <div class="campus-banner" id="campus-banner">
       <span class="trophy">🏆</span>
-      <span class="cb-title">BENNETT CODING RECORD:</span>
-      <span class="cb-score" id="record-score">5,450 PTS</span>
-      <span class="cb-holder" id="record-holder">(Shashank_CSE)</span>
+      <span class="cb-title" id="record-title">BENNETT CAMPUS RECORD:</span>
+      <span class="cb-score" id="record-score">READY</span>
+      <span class="cb-holder" id="record-holder">(Be First!)</span>
     </div>
 
     <!-- Stall Play Now & Nickname Input -->
@@ -84,97 +85,16 @@
       </button>
     </div>
 
+    <!-- Clean Quick Actions (Opens clean modals) -->
     <div class="quick-actions">
-      <button class="qa-btn" id="qa-next">👤 NEXT CODER</button>
       <button class="qa-btn" id="qa-guide">📖 HOW TO PLAY</button>
-      <button class="qa-btn" id="qa-lb">🏆 CHAMPIONS</button>
-      <button class="qa-btn" id="qa-qr">📱 CLUB REGISTRATION</button>
+      <button class="qa-btn" id="qa-lb">🏆 CAMPUS LEADERBOARD</button>
+      <button class="qa-btn" id="qa-qr">📱 JOIN GFG BU CHAPTER</button>
+      <button class="qa-btn" id="qa-next">👤 NEXT CODER</button>
     </div>
 
     <div class="stall-hint">
       Press <kbd>Enter</kbd> to Rush · <kbd>←</kbd><kbd>→</kbd> Move · <kbd>↑</kbd> Jump · <kbd>↓</kbd> Slide
-    </div>
-  </div>
-
-  <!-- Arcade Panels Grid -->
-  <div class="grid">
-    <!-- Card 1: Controls -->
-    <div class="card" style="--ac:var(--bu-cyan)">
-      <h3>⌨ STALL CONTROLS<small>KIOSK READY</small></h3>
-      <ul class="ls k">
-        <li><span><kbd>←</kbd><kbd>→</kbd> or <kbd>A</kbd><kbd>D</kbd></span><span>Shift lane left / right</span></li>
-        <li><span><kbd>↑</kbd> or <kbd>W</kbd> or <kbd>Space</kbd></span><span>Jump over syntax hazards</span></li>
-        <li><span><kbd>↓</kbd> or <kbd>S</kbd></span><span>Slide under high beams & slam</span></li>
-        <li><span><kbd>P</kbd> or <kbd>Esc</kbd></span><span>Pause execution · <kbd>M</kbd> Mute</span></li>
-        <li><span>📱 Touch / Kiosk</span><span>Swipe 4 directions or on-screen D-Pad</span></li>
-      </ul>
-      <p class="note">Survive high-speed algorithms on the Bennett server highway. The Bug Monster is on your tail!</p>
-    </div>
-
-    <!-- Card 2: Power-ups -->
-    <div class="card" style="--ac:var(--gfg-bright)">
-      <h3>⚡ DSA POWER-UPS<small>BUFF INVENTORY</small></h3>
-      <ul class="ls">
-        <li><i style="--c:#00ff88">🛡</i><b>Stack Shield</b><span>Blocks 1 fatal syntax crash</span></li>
-        <li><i style="--c:#38bdf8">⌕</i><b>Binary Search</b><span>Highlights optimal safe lane</span></li>
-        <li><i style="--c:#f59e0b">»</i><b>Queue Sprint</b><span>FIFO speed boost + invincibility</span></li>
-        <li><i style="--c:#c084fc">#</i><b>Hash Map Magnet</b><span>O(1) auto-attracts all bytes</span></li>
-        <li><i style="--c:#f472b6">♥</i><b>Dynamic Programming</b><span>Memoizes state (+1 Extra Life)</span></li>
-      </ul>
-    </div>
-
-    <!-- Card 3: Hazards -->
-    <div class="card" style="--ac:var(--bu-red)">
-      <h3>☠ BUG HAZARDS<small>RUN-TIME CRASHES</small></h3>
-      <ul class="ls">
-        <li><i style="--c:#f97316">∅</i><b>Null Pointer Pit</b><span>Jump the gaping void</span></li>
-        <li><i style="--c:#e11d48">▮</i><b>Stack Overflow Wall</b><span>Switch lanes immediately</span></li>
-        <li><i style="--c:#a855f7">∞</i><b>Infinite Loop</b><span>Rapid lane-shifting barricades</span></li>
-        <li><i style="--c:#8b5cf6">☁</i><b>Memory Leak Fog</b><span>Obscures runner visibility</span></li>
-        <li><i style="--c:#f43f5e">±1</i><b>Off-by-One Barrier</b><span>Shift exactly one lane</span></li>
-      </ul>
-    </div>
-
-    <!-- Card 4: Arcade Specials -->
-    <div class="card" style="--ac:var(--gold)">
-      <h3>★ SPECIAL EVENTS<small>MULTIPLIERS</small></h3>
-      <ul class="ls">
-        <li><i style="--c:#f59e0b">★</i><b>Algorithm Fever</b><span>3 matching <span class="sym">{ } [ ] &lt; &gt;</span> in a row → 8s of x3 Bytes &amp; double score</span></li>
-        <li><i style="--c:#00ff88">⛩</i><b>Boss Gate</b><span>Every 1000m: Locate and sprint through the green compile gate (+500 pts)</span></li>
-        <li><i style="--c:#f97316">⚠</i><b>Server Collapse</b><span>Milestone shockwaves — stay sharp</span></li>
-      </ul>
-    </div>
-
-    <!-- Card 5: Leaderboard -->
-    <div class="card lb" id="card-lb" style="--ac:var(--gold)">
-      <h3>🏆 BENNETT CODING CHAMPIONS<small>HALL OF FAME</small></h3>
-      <div id="lb1"></div>
-    </div>
-
-    <!-- Card 6: Badges -->
-    <div class="card" style="--ac:var(--gfg-bright)">
-      <h3>🏅 CODER BADGES<small id="bdc">0 / 6</small></h3>
-      <div id="bds"></div>
-    </div>
-
-    <!-- Card 7: QR Code & Stall Registration -->
-    <div class="card" id="card-qr" style="--ac:var(--gfg-bright)">
-      <h3>📱 STALL REGISTRATION<small>JOIN BU CODING</small></h3>
-      <div class="qr-card-content">
-        <div class="qr-wrap">
-          <img src="club_qr.png" alt="Bennett GFG Registration QR Code">
-          <div class="qr-badge-center">
-            <img src="gfg_trans.png" alt="GFG">
-          </div>
-        </div>
-        <div class="qr-text">
-          <strong>Scan to Join GFG Bennett Student Chapter</strong>
-          Get DSA roadmaps, hackathon updates, mentorship & exclusive club merchandise.
-        </div>
-        <a href="https://www.geeksforgeeks.org/colleges/bennett-university-greater-noida/" target="_blank" rel="noopener" class="qr-link-btn">
-          <span>VISIT PORTAL</span> ↗
-        </a>
-      </div>
     </div>
   </div>
 </div>
@@ -197,7 +117,7 @@
     <div class="hud-right">
       <div class="target-box">
         CAMPUS BEST
-        <b id="hud-target-disp">5,450</b>
+        <b id="hud-target-disp">---</b>
       </div>
       <button class="hud-btn" id="pb" aria-label="Pause">⏸</button>
       <button class="hud-btn" id="mt" aria-label="Toggle sound">🔊</button>
@@ -231,7 +151,7 @@
 
 <div id="fl"></div>
 
-<!-- GAME OVER SCREEN -->
+<!-- GAME OVER SCREEN (RUN REPORT & ACTUAL LEADERBOARD) -->
 <div id="over" class="scr">
   <div class="panel">
     <div class="panel-logos">
@@ -248,7 +168,7 @@
 
     <div id="fi"></div>
 
-    <!-- Leaderboard on Game Over -->
+    <!-- Real Leaderboard on Game Over -->
     <div class="card lb" style="--ac:var(--gold)">
       <h3>🏆 BENNETT CODING CHAMPIONS</h3>
       <div id="lb2"></div>
@@ -317,6 +237,63 @@
     <button class="btn-play-stall" id="guide-play-btn" style="width: 100%;">
       ▶ START CODE RUSH
     </button>
+  </div>
+</div>
+
+<!-- LEADERBOARD MODAL (REAL CAMPUS DATA ONLY) -->
+<div class="modal-overlay" id="lb-modal">
+  <div class="modal-box">
+    <button class="modal-close" id="lb-close">✕</button>
+    <div class="panel-logos" style="margin-bottom: 12px;">
+      <img src="bennett_trans.png" alt="Bennett">
+      <span>×</span>
+      <img src="gfg_trans.png" alt="GFG">
+    </div>
+    <h2 style="font: 900 24px var(--hd); margin: 0 0 6px; color: var(--gold);">BENNETT CODING CHAMPIONS</h2>
+    <p style="color: var(--mut); margin: 0 0 16px; font-size: 14px;">Official campus high scores from the coding club stall showcase.</p>
+
+    <div class="card lb" style="margin-bottom: 20px; --ac:var(--gold); border-color: rgba(245, 158, 11, 0.35);">
+      <div id="lb1"></div>
+    </div>
+
+    <div style="display: flex; gap: 12px; justify-content: space-between; align-items: center;">
+      <button class="qa-btn" id="btn-clear-lb" style="color: var(--bu-red); border-color: rgba(225, 29, 72, 0.4);">
+        🗑 RESET SCORES
+      </button>
+      <button class="btn-play-stall" id="lb-play-btn" style="height: 48px; padding: 0 28px; font-size: 15px;">
+        ▶ BEAT THE RECORD
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- CLUB REGISTRATION & QR MODAL -->
+<div class="modal-overlay" id="qr-modal">
+  <div class="modal-box">
+    <button class="modal-close" id="qr-close">✕</button>
+    <div class="panel-logos" style="margin-bottom: 12px;">
+      <img src="bennett_trans.png" alt="Bennett">
+      <span>×</span>
+      <img src="gfg_trans.png" alt="GFG">
+    </div>
+    <h2 style="font: 900 24px var(--hd); margin: 0 0 6px; color: var(--gfg-bright);">JOIN BU CODING CLUB × GFG</h2>
+    <p style="color: var(--mut); margin: 0 0 20px; font-size: 14px;">Connect with Bennett University's developer ecosystem & GeeksforGeeks chapter.</p>
+
+    <div class="qr-card-content" style="background: rgba(6, 20, 36, 0.65); padding: 24px; border-radius: 20px; border: 1px solid var(--line);">
+      <div class="qr-wrap">
+        <img src="club_qr.png" alt="Bennett GFG Registration QR Code">
+        <div class="qr-badge-center">
+          <img src="gfg_trans.png" alt="GFG">
+        </div>
+      </div>
+      <div class="qr-text" style="max-width: 360px;">
+        <strong style="color: #fff; font-size: 16px;">Scan with your Phone Camera</strong>
+        Instant access to DSA practice sheets, upcoming campus hackathons, mentorship, and Bennett coding events.
+      </div>
+      <a href="https://www.geeksforgeeks.org/colleges/bennett-university-greater-noida/" target="_blank" rel="noopener" class="qr-link-btn" style="font-size: 13px; padding: 10px 24px;">
+        <span>OPEN REGISTRATION PORTAL</span> ↗
+      </a>
+    </div>
   </div>
 </div>
 

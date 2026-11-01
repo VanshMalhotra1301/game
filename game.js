@@ -26,25 +26,29 @@ function snd(f, d = .1, t = 'square', v = .04, s = 0) {
 
 /* ---------- THREE.JS 3D ARCADE ENGINE ---------- */
 if (!window.THREE) {
-  document.body.insertAdjacentHTML('beforeend', '<div class="nogl">Could not load the 3D graphics engine. Please check internet connection.</div>');
+  document.body.insertAdjacentHTML('beforeend', '<div class="nogl">Could not load 3D graphics engine. Check connection.</div>');
   throw new Error('three.js missing');
 }
 
-const rd = new THREE.WebGLRenderer({ canvas: $('c'), antialias: devicePixelRatio < 2, powerPreference: 'high-performance' });
-rd.setPixelRatio(Math.min(devicePixelRatio, 1.75));
+// Capped pixel ratio for silky smooth 60fps on mobile and 120Hz displays
+const rd = new THREE.WebGLRenderer({ canvas: $('c'), antialias: devicePixelRatio < 1.5, powerPreference: 'high-performance' });
+rd.setPixelRatio(Math.min(window.devicePixelRatio || 1, 1.5));
 
-// Modern Dark Coding Arcade Atmosphere: GFG emerald & Bennett cyan matrix
 const sc = new THREE.Scene();
 sc.background = new THREE.Color(0x020610);
 sc.fog = new THREE.FogExp2(0x030d1a, 0.012);
 
 const cam = new THREE.PerspectiveCamera(65, 1, .1, 300);
+const _camTarget = new THREE.Vector3();
+const _tmpCol = new THREE.Color();
+
 function rs() {
-  rd.setSize(innerWidth, innerHeight);
-  cam.aspect = innerWidth / innerHeight;
+  const w = window.innerWidth, h = window.innerHeight;
+  rd.setSize(w, h);
+  cam.aspect = w / h;
   cam.updateProjectionMatrix();
 }
-addEventListener('resize', rs);
+addEventListener('resize', rs, { passive: true });
 rs();
 
 sc.add(new THREE.AmbientLight(0x4070a0, 0.95));
@@ -77,14 +81,16 @@ const fT = ctex(256, 256, (x, w, h) => {
   x.lineWidth = 4;
   x.strokeStyle = '#00e676';
   [85, 171].forEach(a => {
-    x.beginPath(); x.moveTo(a, 0); x.lineTo(a, h); x.stroke();
+    x.beginPath(); x.moveTo(a, 0); x.lineTo(a, h);
+    x.stroke();
   });
   
   // Bennett cyan outer borders
   x.strokeStyle = '#0284c7';
   x.lineWidth = 8;
   [3, 253].forEach(a => {
-    x.beginPath(); x.moveTo(a, 0); x.lineTo(a, h); x.stroke();
+    x.beginPath(); x.moveTo(a, 0); x.lineTo(a, h);
+    x.stroke();
   });
   
   // Cross grid line
@@ -129,7 +135,7 @@ sc.add(flMesh);
 // Cyber background stars
 {
   const g = new THREE.BufferGeometry(), a = [];
-  for (let i = 0; i < 500; i++) a.push((R() - .5) * 200, R() * 60 + 8, -R() * 200);
+  for (let i = 0; i < 450; i++) a.push((R() - .5) * 200, R() * 60 + 8, -R() * 200);
   g.setAttribute('position', new THREE.Float32BufferAttribute(a, 3));
   sc.add(new THREE.Points(g, new THREE.PointsMaterial({ color: 0x38bdf8, size: .55, fog: false })));
 }
@@ -339,7 +345,7 @@ function coin(x, y, z) {
 }
 
 function coinLine(l, z, n) {
-  for (let i = 0; i < n; i++) coin(LX[l], 1, z - i * 2.2);
+  for (let i = 0; i < n; i++) coin(LX[l], 1, z - i * 2.0);
 }
 
 const PU = [
@@ -372,65 +378,73 @@ function pick(type, i, x, z) {
   PK.push({ type, i, x, z, g });
 }
 
+/* ---------- HIGHER FREQUENCY DYNAMIC OBSTACLE SPAWNER ---------- */
 function spawn() {
   const d = S.dist, z = ZB, L = R() * 3 | 0, r = R();
+
+  // Milestone compile boss gates every 1000m
   if (d >= S.nb) {
     S.nb += 1000;
     gate(z, 'RUNTIME ERROR');
-    gate(z - 18, 'EXCEPTION');
-    coinLine(1, z - 6, 3);
-    return 40;
+    gate(z - 16, 'EXCEPTION');
+    coinLine(1, z - 5, 4);
+    return 36;
   }
-  if (r < .12) {
-    coinLine(L, z, 9);
-    return 14;
+
+  // Tighter obstacle spacings for continuous engagement:
+  if (r < .14) {
+    coinLine(L, z, 7);
+    return 10;
   }
-  if (r < .24) {
+  if (r < .28) {
     mk('pit', 0, z, 'NULL POINTER PIT', '#f59e0b');
-    for (let i = 0; i < 5; i++) coin(LX[L], 1 + 2.1 * Math.sin(i / 4 * Math.PI), z + 2.2 - i * 1.1);
-    return 16;
+    for (let i = 0; i < 4; i++) coin(LX[L], 1 + 2.1 * Math.sin(i / 3 * Math.PI), z + 2.0 - i * 1.1);
+    return 12;
   }
-  if (r < .40) {
-    const open = R() < .3 ? [L, (L + 1) % 3] : [L];
+  if (r < .46) {
+    const open = R() < .35 ? [L, (L + 1) % 3] : [L];
     for (let l = 0; l < 3; l++) {
       if (!open.includes(l)) mk('wall', LX[l], z, l == (L + 1) % 3 || l == (L + 2) % 3 ? 'STACK OVERFLOW' : 0, '#e11d48');
     }
-    coinLine(L, z + 9, 5);
-    return 14;
+    coinLine(L, z + 7, 4);
+    return 11;
   }
-  if (r < .50 && d > 150) {
+  if (r < .58 && d > 60) {
     const L2 = L;
-    for (let i = 0; i < 4; i++) {
+    for (let i = 0; i < 3; i++) {
       for (let l = 0; l < 3; l++) {
-        if (l != (L2 + i) % 3) mk('low', LX[l], z - i * 8, i == 0 && l == (L2 + 1) % 3 ? 'INFINITE LOOP' : 0, '#a855f7');
+        if (l != (L2 + i) % 3) mk('low', LX[l], z - i * 7, i == 0 && l == (L2 + 1) % 3 ? 'INFINITE LOOP' : 0, '#a855f7');
       }
     }
-    return 34;
+    return 22;
   }
-  if (r < .58 && d > 250) {
+  if (r < .68 && d > 120) {
     mk('wall', LX[0], z, 'OFF-BY-ONE', '#e11d48');
     mk('wall', LX[2], z);
-    mk('wall', LX[0], z - 10);
-    mk('wall', LX[1], z - 10);
-    return 30;
+    mk('wall', LX[0], z - 8);
+    mk('wall', LX[1], z - 8);
+    return 20;
   }
-  if (r < .66) {
+  if (r < .78) {
     mk('high', 0, z, 'SEGFAULT BEAM: SLIDE', '#8b5cf6');
-    return 16;
+    return 12;
   }
-  if (r < .72 && d > 200) {
+  if (r < .85 && d > 80) {
     mk('fog', LX[L], z, 'MEMORY LEAK', '#0284c7');
-    return 14;
+    return 11;
   }
-  if (R() < .55) pick('pu', R() * 5 | 0, LX[L], z);
-  else {
+
+  // Power-ups and Fever Syntax Token pickups
+  if (R() < .55) {
+    pick('pu', R() * 5 | 0, LX[L], z);
+  } else {
     const i = R() * 3 | 0;
-    for (let k = 0; k < 3; k++) pick('sy', i, LX[L], z - k * 6);
+    for (let k = 0; k < 3; k++) pick('sy', i, LX[L], z - k * 5);
   }
-  return 22;
+  return 14;
 }
 
-// Preserve spawn progression
+// Preserve spawn depth progression
 const spawnPattern = spawn;
 spawn = function() {
   const spacing = spawnPattern();
@@ -438,8 +452,8 @@ spawn = function() {
   return spacing;
 };
 
-/* ---------- PARTICLES & EFFECTS ---------- */
-const PN = 300, pp = new Float32Array(PN * 3).fill(-99), pc = new Float32Array(PN * 3), PV = new Float32Array(PN * 4);
+/* ---------- PARTICLES & EFFECTS (OPTIMIZED NO-GC) ---------- */
+const PN = 240, pp = new Float32Array(PN * 3).fill(-99), pc = new Float32Array(PN * 3), PV = new Float32Array(PN * 4);
 let pi = 0;
 const pg = new THREE.BufferGeometry();
 pg.setAttribute('position', new THREE.BufferAttribute(pp, 3));
@@ -449,11 +463,11 @@ pts.frustumCulled = false;
 sc.add(pts);
 
 function emit(x, y, z, col, n = 10) {
-  const c = new THREE.Color(col);
+  _tmpCol.set(col);
   for (let i = 0; i < n; i++) {
     pi = (pi + 1) % PN;
     pp.set([x, y, z], pi * 3);
-    pc.set([c.r, c.g, c.b], pi * 3);
+    pc.set([_tmpCol.r, _tmpCol.g, _tmpCol.b], pi * 3);
     PV.set([(R() - .5) * 7, R() * 6, (R() - .5) * 7, .8], pi * 4);
   }
 }
@@ -464,30 +478,16 @@ SF.position.set(0, .08, -30);
 SF.visible = false;
 sc.add(SF);
 
-/* ---------- GAME STATE & LEADERBOARD ---------- */
+/* ---------- GAME STATE & GENUINE LEADERBOARD ---------- */
 const newS = () => ({
   t: 0, dist: 0, bonus: 0, score: 0, coins: 0, lives: 0,
   sh: 0, inv: 0, queue: 0, bs: 0, mg: 0, fv: 0, fg: 0,
-  col: 0, sp: 15, wait: 0, nb: 1000, nc: 900,
+  col: 0, sp: 16, wait: 0, nb: 1000, nc: 900,
   sym: { last: -1, n: 0 }, lane: 1, vy: 0, air: 0, sl: 0,
   bug: 0, shake: 0, rt: 0, safe: 1, ct: 0, ready: 0
 });
 
 let S = newS(), st = 'menu', paused = false, bt;
-
-const AH = LS.g('gfg_bennett_ach', {}), ACH = [
-  ['coin', 'Byte Hoarder', 'Collect 50 bytes in one run'],
-  ['run', 'Marathoner', 'Sprint 1000m on server highway'],
-  ['fever', 'Fever Dream', 'Trigger Algorithm Fever with 3 tokens'],
-  ['shield', 'Stack Guard', 'Block a hit using Stack Shield'],
-  ['boss', 'Exception Handler', 'Clear a Boss Gate cleanly'],
-  ['col', 'Collapse Survivor', 'Survive a Server Collapse milestone']
-];
-
-function rb() {
-  $('bds').innerHTML = ACH.map(a => `<div class="bd ${AH[a[0]] ? '' : 'x'}" title="${a[2]}"><span class="ic">🏅</span><div>${a[1]}<small>${a[2]}</small></div></div>`).join('');
-  $('bdc').textContent = ACH.filter(a => AH[a[0]]).length + ' / ' + ACH.length;
-}
 
 function ban(t, c = '#00ff88') {
   const b = $('ban');
@@ -498,43 +498,25 @@ function ban(t, c = '#00ff88') {
   void b.offsetWidth;
   b.classList.add('on');
   clearTimeout(bt);
-  bt = setTimeout(() => b.classList.remove('on'), 1700);
-}
-
-function ach(id) {
-  if (AH[id]) return;
-  AH[id] = 1;
-  LS.s('gfg_bennett_ach', AH);
-  ban('🏅 BADGE UNLOCKED: ' + ACH.find(a => a[0] == id)[1], '#f59e0b');
-  snd(920, .4, 'sine', .06, 500);
-  rb();
+  bt = setTimeout(() => b.classList.remove('on'), 1600);
 }
 
 function flash(c) {
   const f = $('fl');
   f.style.background = c;
-  f.style.opacity = .5;
-  setTimeout(() => f.style.opacity = 0, 120);
+  f.style.opacity = .45;
+  setTimeout(() => f.style.opacity = 0, 110);
 }
 
-// Bennett Coding Champions Leaderboard
-const SEED = [
-  ['Shashank_CSE', 5450],
-  ['Dijkstra', 5200],
-  ['Aarav_BU25', 4320],
-  ['Priya_Ninja', 3800],
-  ['Ada_Lovelace', 3150],
-  ['Alan_Turing', 2400],
-  ['Tanmay_GFG', 1850],
-  ['NullPtr_Dev', 900]
-];
-
+// Genuine Bennett Coding Champions Leaderboard
 function board() {
   let b = LS.g('gfg_bennett_lb', null);
-  if (!b) {
-    b = SEED.map(([n, s]) => ({ n, s, seed: 1 }));
-    LS.s('gfg_bennett_lb', b);
+  if (Array.isArray(b)) {
+    b = b.filter(e => !e.seed);
+  } else {
+    b = [];
   }
+  LS.s('gfg_bennett_lb', b);
   return b;
 }
 
@@ -542,28 +524,57 @@ function updateCampusRecordDisplay() {
   const b = board();
   if (b && b.length > 0) {
     const top = b[0];
+    $('record-title').textContent = 'BENNETT CAMPUS RECORD:';
     $('record-score').textContent = top.s.toLocaleString() + ' PTS';
     $('record-holder').textContent = '(' + top.n + ')';
     $('hud-target-disp').textContent = top.s.toLocaleString();
+  } else {
+    $('record-title').textContent = 'CAMPUS STALL ARCADE:';
+    $('record-score').textContent = 'READY';
+    $('record-holder').textContent = '(Be First!)';
+    $('hud-target-disp').textContent = '---';
   }
 }
 
 function rlb(hl) {
   const b = board();
-  const h = b.slice(0, 8).map((e, i) => {
+  if (!b || b.length === 0) {
+    const emptyHtml = `
+      <div class="empty-lb">
+        <span class="empty-icon">🏆</span>
+        <div class="empty-text">No runs recorded yet</div>
+        <small class="empty-sub">Play a run to claim the #1 spot on campus!</small>
+      </div>`;
+    if ($('lb1')) $('lb1').innerHTML = emptyHtml;
+    if ($('lb2')) $('lb2').innerHTML = emptyHtml;
+    updateCampusRecordDisplay();
+    return;
+  }
+
+  const h = b.slice(0, 10).map((e, i) => {
     let rankBadge = '';
     if (i === 0) rankBadge = '🥇';
     else if (i === 1) rankBadge = '🥈';
     else if (i === 2) rankBadge = '🥉';
     return `<div class="row r${i + 1} ${e.you === hl ? 'me' : ''}">
       <span class="n">${rankBadge || String(i + 1).padStart(2, '0')}</span>
-      <span class="who">${e.n.replace(/[<&]/g, '')}${e.seed ? '<em>★</em>' : ''}</span>
+      <span class="who">${e.n.replace(/[<&]/g, '')}</span>
       <span class="s">${e.s.toLocaleString()}</span>
     </div>`;
   }).join('');
-  $('lb1').innerHTML = h;
-  $('lb2').innerHTML = h;
+
+  if ($('lb1')) $('lb1').innerHTML = h;
+  if ($('lb2')) $('lb2').innerHTML = h;
   updateCampusRecordDisplay();
+}
+
+function clearLeaderboard() {
+  if (confirm('Clear all recorded scores on this machine for a fresh stall session?')) {
+    LS.s('gfg_bennett_lb', []);
+    LS.s('gfg_bennett_best', 0);
+    rlb();
+    updateCampusRecordDisplay();
+  }
 }
 
 function show(id) {
@@ -577,7 +588,7 @@ function clearAll() {
   }
 }
 
-let TOUCH = matchMedia('(pointer:coarse)').matches || false;
+const TOUCH = ('ontouchstart' in window) || (navigator.maxTouchPoints > 0) || matchMedia('(pointer:coarse)').matches;
 let cdN = 0;
 
 function start() {
@@ -585,11 +596,14 @@ function start() {
   LS.s('gfg_bennett_nick', n);
   $('hud-nick-disp').textContent = n.toUpperCase();
 
+  // Set body class to hide header and give full screen to HUD
+  document.body.className = 'in-game';
+
   clearAll();
   S = newS();
-  ZB = -40;
+  ZB = -35;
   spawn();
-  ZB = -115;
+  ZB = -90;
   P.visible = true;
   P.position.set(0, 0, 0);
   st = 'play';
@@ -621,12 +635,13 @@ function countdown(dt) {
     snd(n ? 540 : 1080, n ? .12 : .3, 'sine', .06, n ? 0 : 350);
     if (!n) {
       $('cdh').style.opacity = 0;
-      setTimeout(() => { if (!cdN) e.textContent = ''; }, 900);
+      setTimeout(() => { if (!cdN) e.textContent = ''; }, 800);
     }
   }
 }
 
 function home() {
+  document.body.className = '';
   clearAll();
   S = newS();
   st = 'menu';
@@ -638,6 +653,7 @@ function home() {
 function die() {
   if (st != 'play') return;
   st = 'dying';
+  document.body.className = 'game-over';
   snd(90, .8, 'sawtooth', .1, -60);
   emit(P.position.x, 1.2, 0, 0xe11d48, 65);
   P.visible = false;
@@ -684,21 +700,21 @@ function die() {
     rlb(id);
     st = 'over';
     show('over');
-  }, 900);
+  }, 800);
 }
 
-/* ---------- GAMEPLAY MECHANICS ---------- */
+/* ---------- GAMEPLAY MECHANICS (OPTIMIZED FOR RESPONSIVENESS) ---------- */
 function jump() {
   if (S.air) return;
-  S.vy = 14.5;
+  S.vy = 15.2;
   S.air = 1;
   S.sl = 0;
-  snd(520, .15, 'square', .04, 400);
+  snd(520, .14, 'square', .04, 400);
 }
 
 function slide() {
-  if (S.air) S.vy = -26;
-  S.sl = .8;
+  if (S.air) S.vy = -28;
+  S.sl = .75;
   snd(220, .12, 'sawtooth', .04, -80);
 }
 
@@ -706,7 +722,7 @@ function mvL(d) {
   const l = Math.max(0, Math.min(2, S.lane + d));
   if (l != S.lane) {
     S.lane = l;
-    snd(380, .06, 'triangle', .03);
+    snd(380, .05, 'triangle', .03);
   }
 }
 
@@ -715,7 +731,6 @@ function hurt(o) {
   const kill = () => { o.dead = 1; o.hit = 1; o.g.visible = false; };
   if (S.sh) {
     S.sh = 0; S.inv = 1; kill();
-    ach('shield');
     flash('#00ff88');
     ban('STACK SHIELD POPPED', '#00ff88');
     snd(160, .3, 'square', .07, -60);
@@ -734,8 +749,8 @@ function hurt(o) {
 }
 
 function take(k) {
-  emit(k.x, 1.3, 0, k.type == 'pu' ? PU[k.i][3] : 0xffffff, 20);
-  snd(680, .15, 'triangle', .06, 500);
+  emit(k.x, 1.3, 0, k.type == 'pu' ? PU[k.i][3] : 0xffffff, 18);
+  snd(680, .14, 'triangle', .06, 500);
   if (k.type == 'pu') {
     const id = PU[k.i][0];
     ban(PU[k.i][1], PU[k.i][2]);
@@ -751,7 +766,6 @@ function take(k) {
       S.sym = { last: -1, n: 0 };
       S.fv = 8;
       ban('ALGORITHM FEVER ACTIVATED!', '#00ff88');
-      ach('fever');
       snd(320, .6, 'sawtooth', .06, 900);
     }
   }
@@ -770,6 +784,7 @@ function safeLane() {
   return f.indexOf(Math.max(...f));
 }
 
+let lastBuffSig = '';
 function chips() {
   const a = [];
   if (S.sh) a.push(['🛡 STACK SHIELD', '#00ff88']);
@@ -780,7 +795,11 @@ function chips() {
   if (S.fv > 0) a.push(['★ FEVER ' + S.fv.toFixed(1), '#00ff88']);
   if (S.fg > 0) a.push(['☁ MEMORY LEAK', '#0284c7']);
 
-  $('bf').innerHTML = a.map(([t, c]) => `<span style="--c:${c}">${t}</span>`).join('');
+  const sig = a.map(x => x[0]).join('|');
+  if (sig !== lastBuffSig) {
+    lastBuffSig = sig;
+    $('bf').innerHTML = a.map(([t, c]) => `<span style="--c:${c}">${t}</span>`).join('');
+  }
   const y = S.sym.last >= 0 ? SY[S.sym.last] : null;
   $('sy').innerHTML = y ? `<span style="color:${y[1]}">${Array(S.sym.n).fill(y[0]).join(' ')}</span>` : '&nbsp;';
   S.safe = safeLane();
@@ -793,24 +812,25 @@ function step(dt) {
   }
   if (S.fv > 0) S.fv = Math.max(0, S.fv - dt);
 
-  const base = Math.min(34, 15 + S.dist * .004 + (S.col > 0 ? 2 : 0));
-  const sp = S.sp = base * (S.queue > 0 ? 1.55 : 1);
+  const base = Math.min(36, 16 + S.dist * .0045 + (S.col > 0 ? 2 : 0));
+  const sp = S.sp = base * (S.queue > 0 ? 1.5 : 1);
   S.dist += sp * dt;
   if (S.fv > 0) S.bonus += sp * dt;
 
+  // Faster obstacle spacing rhythm
   S.wait -= sp * dt;
-  if (S.wait <= 0) S.wait = spawn() + Math.max(10, 26 - S.dist / 120);
+  if (S.wait <= 0) S.wait = spawn() + Math.max(2, 9 - S.dist / 180);
 
-  // Player position interpolation
+  // Snappy lane switching
   const tx = LX[S.lane];
-  P.position.x += (tx - P.position.x) * Math.min(1, dt * 14);
+  P.position.x += (tx - P.position.x) * Math.min(1, dt * 20);
 
   if (S.air) {
-    S.vy -= 40 * dt;
+    S.vy -= 39 * dt;
     P.position.y += S.vy * dt;
     if (P.position.y <= 0) {
       P.position.y = 0; S.vy = 0; S.air = 0;
-      emit(P.position.x, .1, 0, 0x00ff88, 6);
+      emit(P.position.x, .1, 0, 0x00ff88, 5);
     }
   }
   if (S.sl > 0) S.sl -= dt;
@@ -820,8 +840,8 @@ function step(dt) {
   // World coins with magnet logic
   for (const c of CO) {
     if (S.mg > 0 && c.z > -16 && Math.abs(c.x - px) < 7) {
-      c.x += (px - c.x) * Math.min(1, dt * 7);
-      c.y += (py + 1 - c.y) * Math.min(1, dt * 5);
+      c.x += (px - c.x) * Math.min(1, dt * 8);
+      c.y += (py + 1 - c.y) * Math.min(1, dt * 6);
       c.z += 10 * dt;
     }
     c.z += sp * dt;
@@ -854,7 +874,6 @@ function step(dt) {
       if (!o.hit) {
         S.bonus += 500;
         ban('BOSS GATE CLEARED +500', '#00ff88');
-        ach('boss');
         snd(880, .3, 'sine', .06, 600);
       }
     }
@@ -885,7 +904,6 @@ function step(dt) {
       emit(c.x, c.y, 0, 0x00ff88, 5);
       sc.remove(c.m);
       CO.splice(i, 1);
-      if (S.coins >= 50) ach('coin');
     }
   }
 
@@ -903,7 +921,6 @@ function step(dt) {
 
   // Milestones & score
   S.score = Math.floor(S.dist + S.bonus);
-  if (S.dist >= 1000) ach('run');
 
   if (S.score >= S.nc) {
     S.nc += 1400;
@@ -916,7 +933,6 @@ function step(dt) {
     S.col -= dt;
     S.shake = Math.max(S.shake, .7);
     emit(R() * 10 - 5, 9, -R() * 25, 0x00ff88, 2);
-    if (S.col <= 0) ach('col');
   }
 
   S.bug = Math.min(0, S.bug + dt * .7);
@@ -928,7 +944,7 @@ function step(dt) {
     chips();
     SF.visible = S.bs > 0;
   }
-  if (S.bs > 0) SF.position.x += (LX[S.safe] - SF.position.x) * Math.min(1, dt * 10);
+  if (S.bs > 0) SF.position.x += (LX[S.safe] - SF.position.x) * Math.min(1, dt * 12);
 
   $('sc').textContent = S.score.toLocaleString();
   $('di').textContent = Math.floor(S.dist) + 'm';
@@ -993,20 +1009,24 @@ function world(dt, sp) {
 
   if (S.fv > 0 && st == 'play') emit(P.position.x, .2, 0, 0x00ff88, 1);
 
+  // Smooth camera following
   const sh = S.shake * .5;
-  const tf = (cam.aspect < .8 ? 78 : 65) + (S.fv > 0 ? 10 : 0) + (S.queue > 0 ? 10 : 0);
+  const tf = (cam.aspect < .8 ? 76 : 65) + (S.fv > 0 ? 8 : 0) + (S.queue > 0 ? 8 : 0);
   cam.fov += (tf - cam.fov) * Math.min(1, dt * 5);
   cam.updateProjectionMatrix();
 
   sc.fog.density += ((S.fg > 0 ? .075 : .012) - sc.fog.density) * Math.min(1, dt * 3);
-  cam.position.set(P.position.x * .5 + (R() - .5) * sh, 4.6 + P.position.y * .25 + (R() - .5) * sh, 8.2);
-  cam.lookAt(P.position.x * .3, 1.4, -7);
+  cam.position.x += ((P.position.x * .4 + (R() - .5) * sh) - cam.position.x) * Math.min(1, dt * 14);
+  cam.position.y += ((4.5 + P.position.y * .2 + (R() - .5) * sh) - cam.position.y) * Math.min(1, dt * 14);
+  cam.position.z = 8.2;
+  _camTarget.set(P.position.x * .25, 1.4, -7);
+  cam.lookAt(_camTarget);
 }
 
 let last = performance.now();
 function loop(t) {
   requestAnimationFrame(loop);
-  const dt = Math.min(.05, (t - last) / 1000);
+  const dt = Math.min(.045, (t - last) / 1000);
   last = t;
   if (st == 'play') {
     if (!paused) {
@@ -1056,20 +1076,21 @@ addEventListener('touchstart', e => {
 
 addEventListener('touchmove', e => {
   if (st != 'play' || tx0 == null) return;
-  e.preventDefault();
+  if (e.cancelable) e.preventDefault();
   if (paused || S.ready > 0) return;
   const dx = e.touches[0].clientX - tx0, dy = e.touches[0].clientY - ty0;
-  if (Math.max(Math.abs(dx), Math.abs(dy)) < 26) return;
+  if (Math.max(Math.abs(dx), Math.abs(dy)) < 22) return;
   if (Math.abs(dx) > Math.abs(dy)) mvL(dx > 0 ? 1 : -1);
   else dy < 0 ? jump() : slide();
   tx0 = null;
 }, { passive: false });
 
-addEventListener('touchend', () => { tx0 = null; });
+addEventListener('touchend', () => { tx0 = null; }, { passive: true });
 
 function pause(p) {
   if (st != 'play') return;
   paused = p;
+  document.body.classList.toggle('game-paused', p);
   $('pz').classList.toggle('on', p);
 }
 
@@ -1102,16 +1123,36 @@ function nextRunner() {
 
 // Modal logic
 const guideModal = $('guide-modal');
+const lbModal = $('lb-modal');
+const qrModal = $('qr-modal');
+
 function openGuide() { guideModal.classList.add('open'); }
 function closeGuide() { guideModal.classList.remove('open'); }
+function openLB() { rlb(); lbModal.classList.add('open'); }
+function closeLB() { lbModal.classList.remove('open'); }
+function openQR() { qrModal.classList.add('open'); }
+function closeQR() { qrModal.classList.remove('open'); }
 
 $('guide-close').onclick = closeGuide;
+$('lb-close').onclick = closeLB;
+$('qr-close').onclick = closeQR;
+
 guideModal.onclick = e => { if (e.target === guideModal) closeGuide(); };
+lbModal.onclick = e => { if (e.target === lbModal) closeLB(); };
+qrModal.onclick = e => { if (e.target === qrModal) closeQR(); };
+
 $('btn-guide').onclick = openGuide;
 $('qa-guide').onclick = openGuide;
 $('guide-play-btn').onclick = () => { closeGuide(); start(); };
 
-// Buttons
+$('btn-top-lb').onclick = openLB;
+$('qa-lb').onclick = openLB;
+if ($('lb-play-btn')) $('lb-play-btn').onclick = () => { closeLB(); start(); };
+if ($('btn-clear-lb')) $('btn-clear-lb').onclick = clearLeaderboard;
+
+$('qa-qr').onclick = openQR;
+
+// Core Arcade Buttons
 $('mt').onclick = tm;
 $('top-mt').onclick = tm;
 $('pb').onclick = () => pause(true);
@@ -1127,25 +1168,27 @@ $('btn-fs').onclick = toggleFullscreen;
 $('hud-fs-btn').onclick = toggleFullscreen;
 $('btn-kiosk-touch').onclick = toggleTouchControls;
 
-// On-screen touch buttons for kiosks
-$('btn-t-left').onclick = e => { e.stopPropagation(); mvL(-1); };
-$('btn-t-right').onclick = e => { e.stopPropagation(); mvL(1); };
-$('btn-t-jump').onclick = e => { e.stopPropagation(); jump(); };
-$('btn-t-slide').onclick = e => { e.stopPropagation(); slide(); };
+// On-screen touch buttons for mobile & kiosks (pointerdown for zero latency)
+const bindTouch = (id, fn) => {
+  const el = $(id);
+  if (!el) return;
+  el.addEventListener('pointerdown', e => {
+    e.preventDefault();
+    e.stopPropagation();
+    fn();
+  }, { passive: false });
+};
 
-// Smooth scroll to sections
-$('qa-lb').onclick = () => {
-  $('card-lb').scrollIntoView({ behavior: 'smooth' });
-};
-$('qa-qr').onclick = () => {
-  $('card-qr').scrollIntoView({ behavior: 'smooth' });
-};
+bindTouch('btn-t-left', () => mvL(-1));
+bindTouch('btn-t-right', () => mvL(1));
+bindTouch('btn-t-jump', jump);
+bindTouch('btn-t-slide', slide);
 
 document.addEventListener('visibilitychange', () => {
   if (document.hidden) pause(true);
 });
 
-// Auto-enable touch controls if touch device
+// Auto-enable touch controls if touch device detected
 if (TOUCH) {
   $('touch-controls').classList.add('active');
   $('btn-kiosk-touch').classList.add('highlight');
@@ -1154,6 +1197,5 @@ if (TOUCH) {
 // Initialise storage and start animation
 $('nick').value = LS.g('gfg_bennett_nick', '');
 rlb();
-rb();
 show('menu');
 requestAnimationFrame(loop);
