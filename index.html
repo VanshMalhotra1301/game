@@ -1,0 +1,2692 @@
+<!DOCTYPE html>
+<!-- GFG × BENNETT: CODE RUSH — Bennett University × GeeksforGeeks Coding Arcade Experience -->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#030712">
+<meta name="description" content="GFG × BENNETT: CODE RUSH — Official Bennett University × GeeksforGeeks Coding Arcade. Think Fast. Code Smart. Survive the Bugs.">
+<title>GFG × BENNETT: CODE RUSH | Coding Arcade</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;800;900&family=Rajdhani:wght@500;600;700&family=JetBrains+Mono:wght@500;700;800&family=Outfit:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #030712;
+  --bg-darker: #02040a;
+  --gfg: #00b84f;
+  --gfg-bright: #00ff88;
+  --gfg-dark: #0f381e;
+  --bu-blue: #0284c7;
+  --bu-cyan: #38bdf8;
+  --bu-navy: #002b49;
+  --bu-red: #e11d48;
+  --gold: #f59e0b;
+  --t: #f1f5f9;
+  --mut: #94a3b8;
+  --mut-dark: #64748b;
+  --glass: rgba(6, 15, 28, 0.72);
+  --glass2: rgba(10, 24, 44, 0.88);
+  --line: rgba(0, 255, 136, 0.22);
+  --line-bu: rgba(56, 189, 248, 0.25);
+  --hd: 'Orbitron', -apple-system, sans-serif;
+  --tx: 'Rajdhani', 'Segoe UI', system-ui, sans-serif;
+  --mono: 'JetBrains Mono', ui-monospace, monospace;
+  --sans: 'Outfit', system-ui, sans-serif;
+  --sat: env(safe-area-inset-top, 0px);
+  --sab: env(safe-area-inset-bottom, 0px);
+  color-scheme: dark;
+}
+
+* { box-sizing: border-box; }
+html, body {
+  height: 100%;
+  margin: 0;
+  background: var(--bg);
+  color: var(--t);
+  font: 600 16px/1.5 var(--tx);
+  overflow: hidden;
+  -webkit-font-smoothing: antialiased;
+  -webkit-tap-highlight-color: transparent;
+  user-select: none;
+}
+
+canvas {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  touch-action: none;
+  z-index: 0;
+}
+
+button { font: inherit; color: inherit; border: 0; outline: none; cursor: pointer; }
+:focus-visible { outline: 2px solid var(--gfg-bright); outline-offset: 3px; }
+
+/* Subtle Arcade Scanline & Cyber Grid Vignette */
+#fx {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 1;
+  background:
+    radial-gradient(ellipse at 50% 50%, transparent 45%, rgba(2, 6, 15, 0.75) 100%),
+    repeating-linear-gradient(0deg, rgba(0, 255, 136, 0.018) 0 1px, transparent 1px 3px);
+  mix-blend-mode: normal;
+}
+
+.scr {
+  position: fixed;
+  inset: 0;
+  display: none;
+  z-index: 2;
+}
+.scr.on {
+  display: flex;
+  animation: fi .3s ease-out;
+}
+
+@keyframes fi { from { opacity: 0; } }
+@keyframes up { from { opacity: 0; transform: translateY(16px); } }
+@keyframes pop { 0%{opacity:0; transform:scale(.6)} 20%{opacity:1; transform:scale(1.08)} 30%{transform:scale(1)} 85%{opacity:1} 100%{opacity:0; transform:scale(1.22)} }
+@keyframes glowPulse {
+  0%, 100% { box-shadow: 0 0 20px -3px rgba(0, 184, 79, 0.5), 0 0 45px -8px rgba(2, 132, 199, 0.4); }
+  50% { box-shadow: 0 0 35px 2px rgba(0, 255, 136, 0.8), 0 0 65px -2px rgba(56, 189, 248, 0.6); }
+}
+@keyframes badgeShine {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(200%); }
+}
+@keyframes tagBlink { 50% { opacity: 0.3; transform: scale(0.85); } }
+
+/* ---------- TOP BRANDED HEADER (ARCADE BAR) ---------- */
+.arcade-header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 10;
+  height: calc(64px + var(--sat));
+  padding: var(--sat) 20px 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: linear-gradient(180deg, rgba(3, 7, 18, 0.96) 0%, rgba(3, 7, 18, 0.8) 75%, transparent 100%);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border-bottom: 1px solid rgba(0, 255, 136, 0.15);
+}
+
+.brand-collab {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.brand-unit {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  text-decoration: none;
+}
+
+.brand-unit img {
+  height: 38px;
+  width: auto;
+  object-fit: contain;
+  filter: drop-shadow(0 0 10px rgba(255, 255, 255, 0.35));
+  transition: transform .2s ease;
+}
+.brand-unit:hover img {
+  transform: scale(1.06);
+}
+
+.brand-meta {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.1;
+}
+.brand-meta .title {
+  font: 800 13px var(--hd);
+  letter-spacing: .08em;
+  color: #fff;
+}
+.brand-meta .sub {
+  font: 600 10px var(--sans);
+  color: var(--mut);
+  letter-spacing: .06em;
+}
+
+.collab-cross {
+  font: 900 15px var(--hd);
+  color: var(--gfg-bright);
+  text-shadow: 0 0 12px var(--gfg);
+  padding: 0 4px;
+  opacity: .9;
+}
+
+.arcade-tools {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.tool-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 36px;
+  padding: 0 12px;
+  border-radius: 9px;
+  background: var(--glass);
+  border: 1px solid var(--line-bu);
+  color: var(--t);
+  font: 700 11px var(--hd);
+  letter-spacing: .06em;
+  transition: all .2s ease;
+  backdrop-filter: blur(8px);
+}
+.tool-btn:hover {
+  background: rgba(2, 132, 199, 0.2);
+  border-color: var(--bu-cyan);
+  box-shadow: 0 0 16px rgba(56, 189, 248, 0.35);
+  transform: translateY(-1px);
+}
+.tool-btn.highlight {
+  border-color: rgba(0, 255, 136, 0.45);
+  color: var(--gfg-bright);
+}
+.tool-btn.highlight:hover {
+  background: rgba(0, 184, 79, 0.2);
+  border-color: var(--gfg-bright);
+  box-shadow: 0 0 18px rgba(0, 255, 136, 0.4);
+}
+
+/* ---------- MENU & WELCOME SCREEN ---------- */
+#menu {
+  flex-direction: column;
+  align-items: center;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding: calc(76px + var(--sat)) 20px calc(50px + var(--sab));
+  background:
+    radial-gradient(ellipse 75% 50% at 50% 8%, rgba(0, 184, 79, 0.2), transparent 70%),
+    radial-gradient(ellipse 60% 45% at 50% 30%, rgba(2, 132, 199, 0.18), transparent 75%),
+    linear-gradient(180deg, rgba(3, 7, 18, 0.4) 0%, rgba(3, 7, 18, 0.92) 80%);
+}
+
+.hero {
+  text-align: center;
+  margin: 1vh 0 3.5vh;
+  animation: up .6s ease-out;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  max-width: 900px;
+}
+
+.stall-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  font: 700 11px var(--mono);
+  letter-spacing: .25em;
+  color: var(--gfg-bright);
+  padding: 6px 18px;
+  border: 1px solid rgba(0, 255, 136, 0.4);
+  border-radius: 99px;
+  background: rgba(0, 184, 79, 0.12);
+  box-shadow: 0 0 20px -4px rgba(0, 184, 79, 0.3);
+  margin-bottom: 12px;
+}
+.stall-tag:before {
+  content: '';
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--gfg-bright);
+  box-shadow: 0 0 10px var(--gfg-bright);
+  animation: tagBlink 1.4s infinite;
+}
+
+.hero-logos-wrap {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 22px;
+  margin: 10px 0 16px;
+  padding: 10px 24px;
+  background: rgba(2, 13, 24, 0.55);
+  border: 1px solid rgba(0, 255, 136, 0.25);
+  border-radius: 20px;
+  backdrop-filter: blur(12px);
+}
+.hero-logos-wrap .h-logo {
+  height: 60px;
+  width: auto;
+  object-fit: contain;
+  filter: drop-shadow(0 0 14px rgba(0, 255, 136, 0.35));
+}
+.hero-logos-wrap .h-divider {
+  font: 900 24px var(--hd);
+  color: var(--gfg-bright);
+  text-shadow: 0 0 14px var(--gfg);
+}
+
+h1.game-title {
+  font: 900 clamp(42px, 8.8vw, 92px)/1.02 var(--hd);
+  margin: 0;
+  letter-spacing: .03em;
+  background: linear-gradient(100deg, #ffffff 0%, var(--gfg-bright) 45%, var(--bu-cyan) 85%, #ffffff 100%);
+  background-size: 200% auto;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  animation: bg 9s linear infinite;
+  filter: drop-shadow(0 0 28px rgba(0, 255, 136, 0.4)) drop-shadow(0 5px 0 rgba(0,0,0,0.5));
+}
+
+@keyframes bg { to { background-position: 200%; } }
+
+.tagline {
+  font: 700 clamp(13px, 2.4vw, 20px) var(--sans);
+  letter-spacing: .3em;
+  text-transform: uppercase;
+  margin: 10px 0 0;
+  color: #e2e8f0;
+  text-shadow: 0 0 18px rgba(56, 189, 248, 0.6);
+}
+
+.powered-by {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 8px;
+  font: 600 12px var(--mono);
+  color: var(--mut);
+  letter-spacing: .1em;
+}
+.powered-by strong {
+  color: var(--gfg-bright);
+}
+
+/* Campus Record Banner */
+.campus-banner {
+  margin-top: 18px;
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 20px;
+  border-radius: 99px;
+  background: linear-gradient(90deg, rgba(245, 158, 11, 0.15), rgba(0, 184, 79, 0.15));
+  border: 1px solid rgba(245, 158, 11, 0.45);
+  box-shadow: 0 0 20px -6px rgba(245, 158, 11, 0.4);
+}
+.campus-banner .trophy {
+  font-size: 16px;
+}
+.campus-banner .cb-title {
+  font: 800 11px var(--hd);
+  color: var(--gold);
+  letter-spacing: .15em;
+}
+.campus-banner .cb-score {
+  font: 800 15px var(--mono);
+  color: #fff;
+  letter-spacing: .05em;
+}
+.campus-banner .cb-holder {
+  font: 600 12px var(--mono);
+  color: var(--mut);
+}
+
+/* Play Now & Runner Input Section */
+.start-box {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  margin-top: 26px;
+  width: 100%;
+}
+
+.field {
+  position: relative;
+}
+.field label {
+  position: absolute;
+  left: 14px;
+  top: -9px;
+  font: 800 10px var(--hd);
+  letter-spacing: .2em;
+  color: var(--gfg-bright);
+  background: var(--bg);
+  padding: 0 8px;
+  border-radius: 4px;
+  border: 1px solid rgba(0, 255, 136, 0.3);
+}
+
+input#nick {
+  font: 800 18px var(--mono);
+  background: rgba(6, 17, 30, 0.85);
+  border: 1.5px solid var(--line);
+  color: #fff;
+  padding: 0 18px;
+  height: 62px;
+  border-radius: 16px;
+  width: 250px;
+  letter-spacing: .15em;
+  text-transform: uppercase;
+  transition: all .2s ease;
+  backdrop-filter: blur(10px);
+}
+input#nick::placeholder {
+  color: #475569;
+}
+input#nick:focus {
+  outline: 0;
+  border-color: var(--gfg-bright);
+  box-shadow: 0 0 0 4px rgba(0, 255, 136, 0.22), 0 0 26px rgba(0, 184, 79, 0.4);
+}
+
+.btn-play-stall {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  height: 62px;
+  font: 900 18px var(--hd);
+  letter-spacing: .2em;
+  color: #030712;
+  background: linear-gradient(100deg, var(--gfg-bright) 0%, #00b84f 55%, var(--bu-cyan) 100%);
+  border: 0;
+  border-radius: 16px;
+  padding: 0 42px;
+  cursor: pointer;
+  box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.4) inset, 0 12px 35px -6px rgba(0, 255, 136, 0.7);
+  animation: glowPulse 2.8s ease-in-out infinite;
+  transition: transform .15s, filter .2s, box-shadow .2s;
+  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.4);
+}
+.btn-play-stall:hover {
+  transform: translateY(-2px) scale(1.02);
+  filter: brightness(1.12);
+  box-shadow: 0 0 0 1px #fff inset, 0 16px 45px -4px rgba(0, 255, 136, 0.9);
+}
+.btn-play-stall:active {
+  transform: translateY(1px) scale(.98);
+}
+.btn-play-stall .coin-hint {
+  font: 700 11px var(--mono);
+  letter-spacing: .15em;
+  background: rgba(0, 0, 0, 0.2);
+  padding: 3px 8px;
+  border-radius: 6px;
+}
+
+.quick-actions {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  justify-content: center;
+  margin-top: 14px;
+}
+.qa-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 40px;
+  padding: 0 16px;
+  border-radius: 10px;
+  background: rgba(6, 20, 35, 0.65);
+  border: 1px solid var(--line-bu);
+  font: 700 12px var(--hd);
+  letter-spacing: .1em;
+  color: var(--bu-cyan);
+  transition: all .2s;
+}
+.qa-btn:hover {
+  background: rgba(2, 132, 199, 0.25);
+  border-color: var(--bu-cyan);
+  color: #fff;
+  box-shadow: 0 0 16px rgba(56, 189, 248, 0.4);
+}
+
+.stall-hint {
+  margin-top: 18px;
+  font: 600 13px var(--mono);
+  color: var(--mut);
+  letter-spacing: .08em;
+}
+kbd {
+  display: inline-block;
+  min-width: 24px;
+  padding: 2px 8px;
+  margin: 0 2px;
+  font: 800 11px var(--mono);
+  color: #fff;
+  text-align: center;
+  background: linear-gradient(180deg, #1e293b, #0f172a);
+  border: 1px solid rgba(0, 255, 136, 0.4);
+  border-bottom-width: 3px;
+  border-radius: 6px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.4);
+}
+
+/* ---------- ARCADE GRID & CARDS ---------- */
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(320px, 100%), 1fr));
+  gap: 18px;
+  width: min(1180px, 100%);
+  margin-top: 10px;
+}
+
+.card {
+  position: relative;
+  background: var(--glass);
+  border: 1px solid var(--line-bu);
+  border-radius: 20px;
+  padding: 22px 24px 20px;
+  backdrop-filter: blur(16px) saturate(140%);
+  -webkit-backdrop-filter: blur(16px) saturate(140%);
+  box-shadow: 0 20px 45px -20px rgba(0, 0, 0, 0.85);
+  transition: transform .25s, border-color .25s, box-shadow .25s;
+  animation: up .6s ease-out backwards;
+}
+.card:before {
+  content: '';
+  position: absolute;
+  inset: 0 24px auto;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, var(--ac, var(--gfg-bright)), transparent);
+  opacity: .9;
+}
+.card:hover {
+  transform: translateY(-4px);
+  border-color: rgba(0, 255, 136, 0.5);
+  box-shadow: 0 26px 55px -18px rgba(0, 184, 79, 0.35);
+}
+
+.card h3 {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 0 0 16px;
+  color: var(--ac, var(--gfg-bright));
+  font: 800 14px var(--hd);
+  letter-spacing: .2em;
+}
+.card h3 small {
+  margin-left: auto;
+  font: 600 11px var(--mono);
+  letter-spacing: .1em;
+  color: var(--mut);
+}
+
+.ls {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 11px;
+}
+.ls li {
+  display: grid;
+  grid-template-columns: 34px 1fr;
+  column-gap: 12px;
+  align-items: center;
+  font-size: 15px;
+  line-height: 1.25;
+}
+.ls i {
+  grid-row: span 2;
+  display: grid;
+  place-items: center;
+  width: 34px;
+  height: 34px;
+  border-radius: 10px;
+  font: 800 14px var(--mono);
+  font-style: normal;
+  color: var(--c);
+  background: color-mix(in srgb, var(--c) 16%, transparent);
+  border: 1px solid color-mix(in srgb, var(--c) 50%, transparent);
+  box-shadow: 0 0 16px -4px var(--c);
+}
+.ls b { font-weight: 700; color: #fff; }
+.ls span { color: var(--mut); font-size: 13.5px; }
+
+.ls.k li { grid-template-columns: auto 1fr; column-gap: 12px; }
+.ls.k li > span:first-child { grid-row: auto; white-space: nowrap; }
+
+.note {
+  margin: 14px 0 0;
+  padding-top: 12px;
+  border-top: 1px dashed rgba(255, 255, 255, 0.12);
+  color: var(--mut);
+  font-size: 13.5px;
+}
+.sym { font: 800 13px var(--mono); color: var(--gfg-bright); }
+
+/* Leaderboard */
+.lb > div { display: grid; gap: 6px; }
+.lb .row {
+  display: grid;
+  grid-template-columns: 32px 1fr auto;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 12px;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  font-size: 15px;
+  transition: all .2s;
+}
+.lb .row .n { font: 800 13px var(--mono); color: var(--mut); }
+.lb .row .s { font: 800 15px var(--mono); font-variant-numeric: tabular-nums; color: #fff; }
+.lb .row .who { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-weight: 700; }
+.lb .row .who em { font-style: normal; color: var(--gold); font-size: 12px; margin-left: 6px; }
+
+.lb .r1 { background: linear-gradient(90deg, rgba(245, 158, 11, 0.18), rgba(245, 158, 11, 0.05)); border-color: rgba(245, 158, 11, 0.4); }
+.lb .r1 .n { color: var(--gold); }
+.lb .r2 { background: linear-gradient(90deg, rgba(203, 213, 225, 0.14), rgba(203, 213, 225, 0.04)); border-color: rgba(203, 213, 225, 0.3); }
+.lb .r2 .n { color: #e2e8f0; }
+.lb .r3 { background: linear-gradient(90deg, rgba(217, 119, 6, 0.14), rgba(217, 119, 6, 0.04)); border-color: rgba(217, 119, 6, 0.3); }
+.lb .r3 .n { color: #f97316; }
+
+.lb .me {
+  background: linear-gradient(90deg, rgba(0, 184, 79, 0.3), rgba(2, 132, 199, 0.15)) !important;
+  box-shadow: 0 0 0 1.5px rgba(0, 255, 136, 0.6) inset;
+}
+.lb .me .who, .lb .me .s { color: var(--gfg-bright) !important; text-shadow: 0 0 10px rgba(0, 255, 136, 0.5); }
+
+/* Badges */
+#bds { display: grid; grid-template-columns: repeat(auto-fill, minmax(136px, 1fr)); gap: 10px; }
+.bd {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 12px;
+  border: 1px solid rgba(245, 158, 11, 0.55);
+  border-radius: 14px;
+  font-size: 13px;
+  font-weight: 700;
+  line-height: 1.15;
+  background: linear-gradient(135deg, rgba(245, 158, 11, 0.16), transparent);
+  box-shadow: 0 0 18px -6px var(--gold);
+}
+.bd small { display: block; font-weight: 500; font-size: 11px; color: var(--mut); margin-top: 3px; }
+.bd.x {
+  border-color: rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.02);
+  box-shadow: none;
+  color: #64748b;
+}
+.bd.x .ic { filter: grayscale(1); opacity: .35; }
+.bd .ic { font-size: 20px; }
+
+/* Stall QR Card */
+.qr-card-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 14px;
+}
+.qr-wrap {
+  position: relative;
+  padding: 12px;
+  background: #ffffff;
+  border-radius: 18px;
+  box-shadow: 0 0 35px -5px rgba(0, 255, 136, 0.5), 0 0 0 2px var(--gfg);
+}
+.qr-wrap img {
+  width: 140px;
+  height: 140px;
+  display: block;
+  border-radius: 8px;
+}
+.qr-badge-center {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 34px;
+  height: 34px;
+  background: #030712;
+  border-radius: 8px;
+  display: grid;
+  place-items: center;
+  border: 2px solid var(--gfg-bright);
+}
+.qr-badge-center img {
+  width: 24px;
+  height: 24px;
+  object-fit: contain;
+}
+.qr-text {
+  font: 600 13px var(--sans);
+  color: var(--mut);
+  line-height: 1.4;
+}
+.qr-text strong {
+  color: #fff;
+  display: block;
+  font: 700 14px var(--hd);
+  margin-bottom: 2px;
+}
+.qr-link-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font: 700 12px var(--hd);
+  color: var(--gfg-bright);
+  text-decoration: none;
+  padding: 8px 18px;
+  border-radius: 10px;
+  background: rgba(0, 184, 79, 0.15);
+  border: 1px solid rgba(0, 255, 136, 0.35);
+  transition: all .2s;
+}
+.qr-link-btn:hover {
+  background: rgba(0, 184, 79, 0.28);
+  border-color: var(--gfg-bright);
+  box-shadow: 0 0 16px rgba(0, 255, 136, 0.4);
+}
+
+/* ---------- IN-GAME HUD ---------- */
+#hud { pointer-events: none; display: none; }
+#hud.on { display: block; }
+
+.hud-top-bar {
+  position: absolute;
+  top: calc(12px + var(--sat));
+  left: 14px;
+  right: 14px;
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+}
+
+.hud-left {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.hud-runner-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--glass);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 6px 14px;
+  font: 700 11px var(--mono);
+  color: var(--gfg-bright);
+  box-shadow: 0 8px 24px -10px rgba(0,0,0,0.8);
+}
+.hud-runner-pill .dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--gfg-bright);
+  box-shadow: 0 0 8px var(--gfg-bright);
+}
+.hud-runner-pill strong {
+  color: #fff;
+  letter-spacing: .1em;
+}
+
+.stats-cluster {
+  display: flex;
+  gap: 8px;
+}
+.st {
+  min-width: clamp(84px, 18vw, 132px);
+  background: var(--glass);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid var(--line-bu);
+  border-radius: 16px;
+  padding: 6px 14px 8px;
+  text-align: center;
+  font: 800 10px var(--hd);
+  letter-spacing: .2em;
+  color: var(--bu-cyan);
+  box-shadow: 0 10px 30px -12px rgba(0, 0, 0, 0.7);
+}
+.st b {
+  display: block;
+  font: 800 clamp(18px, 4vw, 26px)/1.15 var(--mono);
+  font-variant-numeric: tabular-nums;
+  color: #fff;
+  letter-spacing: 0;
+  text-shadow: 0 0 14px rgba(56, 189, 248, 0.7);
+}
+.st.score-box {
+  border-color: rgba(0, 255, 136, 0.4);
+  color: var(--gfg-bright);
+}
+.st.score-box b {
+  color: #ffffff;
+  text-shadow: 0 0 16px rgba(0, 255, 136, 0.8);
+}
+.st.bytes-box {
+  border-color: rgba(245, 158, 11, 0.4);
+  color: var(--gold);
+}
+.st.bytes-box b {
+  text-shadow: 0 0 14px rgba(245, 158, 11, 0.6);
+}
+
+.hud-right {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.target-box {
+  background: var(--glass);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(245, 158, 11, 0.35);
+  border-radius: 12px;
+  padding: 6px 12px;
+  text-align: right;
+  font: 700 9px var(--hd);
+  color: var(--gold);
+  letter-spacing: .15em;
+}
+.target-box b {
+  display: block;
+  font: 800 14px var(--mono);
+  color: #fff;
+}
+
+.hud-btn {
+  pointer-events: auto;
+  width: 44px;
+  height: 44px;
+  display: grid;
+  place-items: center;
+  background: var(--glass);
+  backdrop-filter: blur(12px);
+  border: 1px solid var(--line-bu);
+  border-radius: 14px;
+  cursor: pointer;
+  font-size: 18px;
+  transition: all .2s;
+  box-shadow: 0 8px 24px -10px rgba(0,0,0,0.7);
+}
+.hud-btn:hover {
+  background: var(--glass2);
+  border-color: var(--gfg-bright);
+  transform: translateY(-1px);
+}
+
+#bf {
+  position: absolute;
+  top: calc(90px + var(--sat));
+  left: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  align-items: flex-start;
+}
+#bf span {
+  font: 800 11px var(--mono);
+  letter-spacing: .06em;
+  padding: 6px 12px;
+  border: 1px solid color-mix(in srgb, var(--c) 70%, transparent);
+  color: var(--c);
+  border-radius: 10px;
+  background: color-mix(in srgb, var(--c) 14%, rgba(3, 7, 18, 0.85));
+  backdrop-filter: blur(10px);
+  box-shadow: 0 0 18px -4px var(--c);
+  animation: up .2s ease-out;
+}
+
+/* Algorithm Fever Gauge */
+#fvw {
+  position: absolute;
+  bottom: calc(24px + var(--sab));
+  left: 50%;
+  translate: -50% 0;
+  width: min(390px, 82vw);
+  text-align: center;
+  font: 800 10px var(--hd);
+  letter-spacing: .35em;
+  color: var(--gfg-bright);
+  padding: 8px 16px 10px;
+  border-radius: 16px;
+  background: var(--glass);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(0, 255, 136, 0.35);
+  box-shadow: 0 12px 35px -10px rgba(0, 0, 0, 0.8);
+}
+#sy {
+  display: block;
+  min-height: 24px;
+  font: 800 18px var(--mono);
+  letter-spacing: .3em;
+}
+#fvw i {
+  display: block;
+  height: 7px;
+  border-radius: 6px;
+  background: rgba(255, 255, 255, 0.1);
+  overflow: hidden;
+  margin: 6px 0;
+}
+#fv {
+  display: block;
+  height: 100%;
+  width: 0;
+  text-decoration: none;
+  background: linear-gradient(90deg, var(--gfg-bright), var(--bu-cyan), var(--gold));
+  box-shadow: 0 0 14px var(--gfg-bright);
+  transition: width .15s linear;
+}
+
+/* On-Screen Touch / Kiosk Controls */
+#touch-controls {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  display: none;
+  z-index: 5;
+}
+#touch-controls.active {
+  display: block;
+}
+.touch-pad-left {
+  position: absolute;
+  bottom: calc(20px + var(--sab));
+  left: 20px;
+  display: flex;
+  gap: 12px;
+  pointer-events: auto;
+}
+.touch-pad-right {
+  position: absolute;
+  bottom: calc(20px + var(--sab));
+  right: 20px;
+  display: flex;
+  gap: 12px;
+  pointer-events: auto;
+}
+.touch-btn {
+  width: 66px;
+  height: 66px;
+  border-radius: 20px;
+  background: rgba(6, 20, 36, 0.75);
+  border: 2px solid var(--line-bu);
+  backdrop-filter: blur(12px);
+  display: grid;
+  place-items: center;
+  font: 900 20px var(--hd);
+  color: #fff;
+  box-shadow: 0 10px 25px -8px rgba(0,0,0,0.8);
+  user-select: none;
+  touch-action: none;
+  transition: transform .1s, background .1s, border-color .1s;
+}
+.touch-btn:active {
+  transform: scale(0.92);
+  background: rgba(0, 184, 79, 0.4);
+  border-color: var(--gfg-bright);
+}
+.touch-btn.jump {
+  border-color: rgba(0, 255, 136, 0.5);
+  color: var(--gfg-bright);
+}
+.touch-btn.slide {
+  border-color: rgba(245, 158, 11, 0.5);
+  color: var(--gold);
+}
+
+#ban {
+  position: absolute;
+  top: 24%;
+  width: 100%;
+  text-align: center;
+  font: 900 clamp(22px, 5.5vw, 46px) var(--hd);
+  opacity: 0;
+  letter-spacing: .08em;
+  padding: 0 16px;
+  pointer-events: none;
+}
+#ban.on { animation: pop 1.7s ease-out forwards; }
+
+#cd {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  align-content: center;
+  gap: 12px;
+  font: 900 clamp(84px, 22vw, 190px)/1 var(--hd);
+  color: #fff;
+  text-shadow: 0 0 45px var(--gfg), 0 0 90px var(--bu-cyan);
+  pointer-events: none;
+}
+#cd b { display: block; opacity: 0; }
+#cd b.on { animation: pop 1s ease-out forwards; }
+#cd small {
+  font: 700 clamp(12px, 2.6vw, 16px) var(--mono);
+  letter-spacing: .15em;
+  color: #e2e8f0;
+  text-shadow: 0 2px 10px rgba(0,0,0,0.9);
+}
+
+#fl {
+  position: fixed;
+  inset: 0;
+  opacity: 0;
+  transition: opacity .4s;
+  pointer-events: none;
+  z-index: 3;
+  mix-blend-mode: screen;
+}
+
+/* ---------- OVERLAYS (PAUSE & GAME OVER) ---------- */
+#over, #pz {
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  text-align: center;
+  background:
+    radial-gradient(ellipse at 50% 30%, rgba(225, 29, 72, 0.22), rgba(2, 4, 10, 0.94) 75%);
+  overflow-y: auto;
+  padding: calc(24px + var(--sat)) 20px calc(24px + var(--sab));
+  gap: 8px;
+}
+#pz {
+  background: rgba(3, 7, 18, 0.8);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+
+.panel {
+  width: min(460px, 100%);
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  align-items: center;
+  animation: up .4s ease-out;
+}
+
+.panel-logos {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 4px;
+}
+.panel-logos img {
+  height: 42px;
+  width: auto;
+  object-fit: contain;
+}
+.panel-logos span {
+  font: 900 16px var(--hd);
+  color: var(--gfg-bright);
+}
+
+#over h1 {
+  position: relative;
+  font: 900 clamp(38px, 9.5vw, 76px) var(--hd);
+  background: linear-gradient(90deg, var(--bu-red), #f97316);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  filter: drop-shadow(0 0 26px rgba(225, 29, 72, 0.8));
+  margin: 0;
+  letter-spacing: .04em;
+}
+.over-sub {
+  font: 700 12px var(--mono);
+  color: var(--mut);
+  letter-spacing: .2em;
+}
+
+.lbl { font: 800 11px var(--hd); letter-spacing: .35em; color: var(--bu-cyan); }
+.big {
+  font: 900 clamp(48px, 12vw, 86px)/1 var(--mono);
+  font-variant-numeric: tabular-nums;
+  color: #fff;
+  text-shadow: 0 0 35px rgba(0, 255, 136, 0.85);
+}
+
+#nb {
+  display: none;
+  font: 900 12px var(--hd);
+  letter-spacing: .25em;
+  color: #030712;
+  background: linear-gradient(90deg, var(--gold), #fbbf24);
+  padding: 6px 16px;
+  border-radius: 99px;
+  box-shadow: 0 0 25px var(--gold);
+}
+#nb.on { display: inline-block; }
+
+#fi {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(96px, 1fr));
+  gap: 10px;
+  width: 100%;
+}
+.tile {
+  background: var(--glass);
+  border: 1px solid var(--line-bu);
+  border-radius: 14px;
+  padding: 10px 8px;
+}
+.tile small {
+  display: block;
+  font: 800 10px var(--hd);
+  letter-spacing: .2em;
+  color: var(--mut);
+}
+.tile b {
+  font: 800 19px var(--mono);
+  color: #fff;
+}
+
+.row2 {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  justify-content: center;
+  width: 100%;
+}
+.row2 .btn {
+  flex: 1;
+  min-width: 140px;
+  height: 54px;
+  border-radius: 14px;
+  font: 900 15px var(--hd);
+  letter-spacing: .15em;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  transition: transform .15s, filter .2s;
+}
+.row2 .btn:hover {
+  transform: translateY(-2px);
+  filter: brightness(1.1);
+}
+.btn-primary {
+  color: #030712;
+  background: linear-gradient(100deg, var(--gfg-bright), var(--gfg));
+  box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.3) inset, 0 10px 30px -8px rgba(0, 184, 79, 0.7);
+}
+.btn-secondary {
+  color: var(--bu-cyan);
+  background: rgba(2, 132, 199, 0.12);
+  border: 1px solid var(--line-bu);
+}
+.btn-secondary:hover {
+  background: rgba(2, 132, 199, 0.22);
+  box-shadow: 0 0 20px -4px rgba(56, 189, 248, 0.5);
+}
+
+#over .card { width: 100%; text-align: left; }
+#pz h1 {
+  font: 900 clamp(36px, 9vw, 68px) var(--hd);
+  margin: 0;
+  color: #fff;
+  text-shadow: 0 0 24px var(--bu-cyan);
+}
+
+/* Modal for Instructions Guide */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  display: none;
+  place-items: center;
+  padding: 20px;
+  background: rgba(2, 6, 15, 0.85);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+}
+.modal-overlay.open {
+  display: grid;
+  animation: fi .25s ease-out;
+}
+.modal-box {
+  background: rgba(6, 18, 32, 0.95);
+  border: 1.5px solid var(--line);
+  border-radius: 24px;
+  width: min(650px, 100%);
+  max-height: 85vh;
+  overflow-y: auto;
+  padding: 28px;
+  position: relative;
+  box-shadow: 0 25px 60px -20px rgba(0, 255, 136, 0.4);
+}
+.modal-close {
+  position: absolute;
+  top: 18px;
+  right: 18px;
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  display: grid;
+  place-items: center;
+  font: 800 16px var(--mono);
+  color: #fff;
+  cursor: pointer;
+  transition: all .2s;
+}
+.modal-close:hover {
+  background: rgba(225, 29, 72, 0.2);
+  border-color: var(--bu-red);
+  color: var(--bu-red);
+}
+
+@media (max-width: 680px) {
+  .arcade-header { height: calc(56px + var(--sat)); padding: var(--sat) 12px 0; }
+  .brand-unit img { height: 30px; }
+  .brand-meta .title { font-size: 11px; }
+  .brand-meta .sub { display: none; }
+  .tool-btn span { display: none; }
+  .hero-logos-wrap .h-logo { height: 46px; }
+  #menu { padding: calc(66px + var(--sat)) 14px calc(40px + var(--sab)); }
+  .btn-play-stall { width: 100%; }
+  input#nick { width: 100%; }
+  .touch-btn { width: 56px; height: 56px; font-size: 18px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *:before { animation-duration: .01s !important; animation-iteration-count: 1 !important; transition: none !important; }
+  h1.game-title { animation: none; }
+  #ban.on, #cd b.on { animation: none; opacity: 1; }
+}
+
+.nogl {
+  position: fixed;
+  inset: auto 0 0;
+  padding: 16px;
+  text-align: center;
+  background: var(--bu-red);
+  color: #fff;
+  font: 700 14px var(--sans);
+  z-index: 99;
+}
+</style>
+</head>
+<body>
+
+<canvas id="c"></canvas>
+<div id="fx"></div>
+
+<!-- TOP BRANDED HEADER -->
+<header class="arcade-header">
+  <div class="brand-collab">
+    <div class="brand-unit">
+      <img src="bennett_trans.png" alt="Bennett University Crest" id="hdr-bu-logo">
+      <div class="brand-meta">
+        <span class="title">BENNETT UNIVERSITY</span>
+        <span class="sub">Times Higher Education</span>
+      </div>
+    </div>
+    <span class="collab-cross">×</span>
+    <div class="brand-unit">
+      <img src="gfg_trans.png" alt="GeeksforGeeks Logo" id="hdr-gfg-logo">
+      <div class="brand-meta">
+        <span class="title">GEEKSFORGEEKS</span>
+        <span class="sub">Student Chapter Arcade</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="arcade-tools">
+    <button class="tool-btn highlight" id="btn-guide"><span>GUIDE</span> ℹ️</button>
+    <button class="tool-btn" id="btn-kiosk-touch"><span>TOUCH</span> 📱</button>
+    <button class="tool-btn" id="btn-fs"><span>FULLSCREEN</span> ⛶</button>
+    <button class="tool-btn" id="top-mt">🔊</button>
+  </div>
+</header>
+
+<!-- WELCOME / ARCADE STANDBY SCREEN -->
+<div id="menu" class="scr on">
+  <div class="hero">
+    <div class="stall-tag">OFFICIAL CODING ARCADE · STALL SHOWCASE</div>
+    
+    <div class="hero-logos-wrap">
+      <img src="bennett_trans.png" alt="Bennett University" class="h-logo">
+      <span class="h-divider">×</span>
+      <img src="gfg_trans.png" alt="GeeksforGeeks" class="h-logo">
+    </div>
+
+    <h1 class="game-title">GFG × BENNETT: CODE RUSH</h1>
+    <div class="tagline">Think Fast. Code Smart. Survive the Bugs.</div>
+    <div class="powered-by">Powered by <strong>GeeksforGeeks</strong> | Bennett University Coding Club</div>
+
+    <!-- Campus Live Record Badge -->
+    <div class="campus-banner" id="campus-banner">
+      <span class="trophy">🏆</span>
+      <span class="cb-title">BENNETT CODING RECORD:</span>
+      <span class="cb-score" id="record-score">5,450 PTS</span>
+      <span class="cb-holder" id="record-holder">(Shashank_CSE)</span>
+    </div>
+
+    <!-- Stall Play Now & Nickname Input -->
+    <div class="start-box">
+      <div class="field">
+        <label for="nick">CODER HANDLE</label>
+        <input id="nick" maxlength="12" placeholder="ENTER HANDLE" autocomplete="off" spellcheck="false">
+      </div>
+      <button class="btn-play-stall" id="play">
+        <span>▶ PLAY NOW</span>
+        <span class="coin-hint">START RUN</span>
+      </button>
+    </div>
+
+    <div class="quick-actions">
+      <button class="qa-btn" id="qa-next">👤 NEXT CODER</button>
+      <button class="qa-btn" id="qa-guide">📖 HOW TO PLAY</button>
+      <button class="qa-btn" id="qa-lb">🏆 CHAMPIONS</button>
+      <button class="qa-btn" id="qa-qr">📱 CLUB REGISTRATION</button>
+    </div>
+
+    <div class="stall-hint">
+      Press <kbd>Enter</kbd> to Rush · <kbd>←</kbd><kbd>→</kbd> Move · <kbd>↑</kbd> Jump · <kbd>↓</kbd> Slide
+    </div>
+  </div>
+
+  <!-- Arcade Panels Grid -->
+  <div class="grid">
+    <!-- Card 1: Controls -->
+    <div class="card" style="--ac:var(--bu-cyan)">
+      <h3>⌨ STALL CONTROLS<small>KIOSK READY</small></h3>
+      <ul class="ls k">
+        <li><span><kbd>←</kbd><kbd>→</kbd> or <kbd>A</kbd><kbd>D</kbd></span><span>Shift lane left / right</span></li>
+        <li><span><kbd>↑</kbd> or <kbd>W</kbd> or <kbd>Space</kbd></span><span>Jump over syntax hazards</span></li>
+        <li><span><kbd>↓</kbd> or <kbd>S</kbd></span><span>Slide under high beams & slam</span></li>
+        <li><span><kbd>P</kbd> or <kbd>Esc</kbd></span><span>Pause execution · <kbd>M</kbd> Mute</span></li>
+        <li><span>📱 Touch / Kiosk</span><span>Swipe 4 directions or on-screen D-Pad</span></li>
+      </ul>
+      <p class="note">Survive high-speed algorithms on the Bennett server highway. The Bug Monster is on your tail!</p>
+    </div>
+
+    <!-- Card 2: Power-ups -->
+    <div class="card" style="--ac:var(--gfg-bright)">
+      <h3>⚡ DSA POWER-UPS<small>BUFF INVENTORY</small></h3>
+      <ul class="ls">
+        <li><i style="--c:#00ff88">🛡</i><b>Stack Shield</b><span>Blocks 1 fatal syntax crash</span></li>
+        <li><i style="--c:#38bdf8">⌕</i><b>Binary Search</b><span>Highlights optimal safe lane</span></li>
+        <li><i style="--c:#f59e0b">»</i><b>Queue Sprint</b><span>FIFO speed boost + invincibility</span></li>
+        <li><i style="--c:#c084fc">#</i><b>Hash Map Magnet</b><span>O(1) auto-attracts all bytes</span></li>
+        <li><i style="--c:#f472b6">♥</i><b>Dynamic Programming</b><span>Memoizes state (+1 Extra Life)</span></li>
+      </ul>
+    </div>
+
+    <!-- Card 3: Hazards -->
+    <div class="card" style="--ac:var(--bu-red)">
+      <h3>☠ BUG HAZARDS<small>RUN-TIME CRASHES</small></h3>
+      <ul class="ls">
+        <li><i style="--c:#f97316">∅</i><b>Null Pointer Pit</b><span>Jump the gaping void</span></li>
+        <li><i style="--c:#e11d48">▮</i><b>Stack Overflow Wall</b><span>Switch lanes immediately</span></li>
+        <li><i style="--c:#a855f7">∞</i><b>Infinite Loop</b><span>Rapid lane-shifting barricades</span></li>
+        <li><i style="--c:#8b5cf6">☁</i><b>Memory Leak Fog</b><span>Obscures runner visibility</span></li>
+        <li><i style="--c:#f43f5e">±1</i><b>Off-by-One Barrier</b><span>Shift exactly one lane</span></li>
+      </ul>
+    </div>
+
+    <!-- Card 4: Arcade Specials -->
+    <div class="card" style="--ac:var(--gold)">
+      <h3>★ SPECIAL EVENTS<small>MULTIPLIERS</small></h3>
+      <ul class="ls">
+        <li><i style="--c:#f59e0b">★</i><b>Algorithm Fever</b><span>3 matching <span class="sym">{ } [ ] &lt; &gt;</span> in a row → 8s of x3 Bytes &amp; double score</span></li>
+        <li><i style="--c:#00ff88">⛩</i><b>Boss Gate</b><span>Every 1000m: Locate and sprint through the green compile gate (+500 pts)</span></li>
+        <li><i style="--c:#f97316">⚠</i><b>Server Collapse</b><span>Milestone shockwaves — stay sharp</span></li>
+      </ul>
+    </div>
+
+    <!-- Card 5: Leaderboard -->
+    <div class="card lb" id="card-lb" style="--ac:var(--gold)">
+      <h3>🏆 BENNETT CODING CHAMPIONS<small>HALL OF FAME</small></h3>
+      <div id="lb1"></div>
+    </div>
+
+    <!-- Card 6: Badges -->
+    <div class="card" style="--ac:var(--gfg-bright)">
+      <h3>🏅 CODER BADGES<small id="bdc">0 / 6</small></h3>
+      <div id="bds"></div>
+    </div>
+
+    <!-- Card 7: QR Code & Stall Registration -->
+    <div class="card" id="card-qr" style="--ac:var(--gfg-bright)">
+      <h3>📱 STALL REGISTRATION<small>JOIN BU CODING</small></h3>
+      <div class="qr-card-content">
+        <div class="qr-wrap">
+          <img src="club_qr.png" alt="Bennett GFG Registration QR Code">
+          <div class="qr-badge-center">
+            <img src="gfg_trans.png" alt="GFG">
+          </div>
+        </div>
+        <div class="qr-text">
+          <strong>Scan to Join GFG Bennett Student Chapter</strong>
+          Get DSA roadmaps, hackathon updates, mentorship & exclusive club merchandise.
+        </div>
+        <a href="https://www.geeksforgeeks.org/colleges/bennett-university-greater-noida/" target="_blank" rel="noopener" class="qr-link-btn">
+          <span>VISIT PORTAL</span> ↗
+        </a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- IN-GAME HUD -->
+<div id="hud" class="scr">
+  <div class="hud-top-bar">
+    <div class="hud-left">
+      <div class="hud-runner-pill">
+        <span class="dot"></span>
+        <span>RUNNER:</span> <strong id="hud-nick-disp">CODER</strong>
+      </div>
+      <div class="stats-cluster">
+        <div class="st score-box">SCORE<b id="sc">0</b></div>
+        <div class="st">DIST<b id="di">0m</b></div>
+        <div class="st bytes-box">BYTES<b id="co">0</b></div>
+      </div>
+    </div>
+
+    <div class="hud-right">
+      <div class="target-box">
+        CAMPUS BEST
+        <b id="hud-target-disp">5,450</b>
+      </div>
+      <button class="hud-btn" id="pb" aria-label="Pause">⏸</button>
+      <button class="hud-btn" id="mt" aria-label="Toggle sound">🔊</button>
+      <button class="hud-btn" id="hud-fs-btn" aria-label="Fullscreen">⛶</button>
+    </div>
+  </div>
+
+  <div id="bf"></div>
+  <div id="ban"></div>
+  <div id="cd"><b id="cdn"></b><small id="cdh"></small></div>
+
+  <!-- Algorithm Fever Gauge -->
+  <div id="fvw">
+    <span id="sy">&nbsp;</span>
+    <i><u id="fv"></u></i>
+    ALGORITHM FEVER
+  </div>
+
+  <!-- On-Screen Kiosk Touch Controls Overlay -->
+  <div id="touch-controls">
+    <div class="touch-pad-left">
+      <button class="touch-btn" id="btn-t-left">◀</button>
+      <button class="touch-btn" id="btn-t-right">▶</button>
+    </div>
+    <div class="touch-pad-right">
+      <button class="touch-btn jump" id="btn-t-jump">▲</button>
+      <button class="touch-btn slide" id="btn-t-slide">▼</button>
+    </div>
+  </div>
+</div>
+
+<div id="fl"></div>
+
+<!-- GAME OVER SCREEN -->
+<div id="over" class="scr">
+  <div class="panel">
+    <div class="panel-logos">
+      <img src="bennett_trans.png" alt="Bennett">
+      <span>×</span>
+      <img src="gfg_trans.png" alt="GFG">
+    </div>
+    <h1>SEGFAULT CAUGHT</h1>
+    <div class="over-sub">COMPILATION HALTED · RUN COMPLETED</div>
+
+    <div class="lbl">FINAL SCORE</div>
+    <div class="big" id="fs">0</div>
+    <span id="nb">★ NEW BENNETT CAMPUS RECORD ★</span>
+
+    <div id="fi"></div>
+
+    <!-- Leaderboard on Game Over -->
+    <div class="card lb" style="--ac:var(--gold)">
+      <h3>🏆 BENNETT CODING CHAMPIONS</h3>
+      <div id="lb2"></div>
+    </div>
+
+    <div class="row2">
+      <button class="btn btn-primary" id="again">▶ NEXT RUNNER / RETRY</button>
+      <button class="btn btn-secondary" id="home">ARCADE MENU</button>
+    </div>
+    <div class="stall-hint">Press <kbd>Enter</kbd> to start next runner's challenge</div>
+  </div>
+</div>
+
+<!-- PAUSE SCREEN -->
+<div id="pz" class="scr">
+  <div class="panel">
+    <div class="panel-logos">
+      <img src="bennett_trans.png" alt="Bennett">
+      <span>×</span>
+      <img src="gfg_trans.png" alt="GFG">
+    </div>
+    <h1>EXECUTION PAUSED</h1>
+    <div class="over-sub">BENNETT × GFG ARCADE</div>
+
+    <div class="stall-hint" style="margin: 12px 0;">
+      Press <kbd>P</kbd> or <kbd>Esc</kbd> to resume execution
+    </div>
+
+    <div class="row2">
+      <button class="btn btn-primary" id="rsm">▶ RESUME RUN</button>
+      <button class="btn btn-secondary" id="pm">ARCADE MENU</button>
+    </div>
+  </div>
+</div>
+
+<!-- INSTRUCTIONS GUIDE MODAL -->
+<div class="modal-overlay" id="guide-modal">
+  <div class="modal-box">
+    <button class="modal-close" id="guide-close">✕</button>
+    <div class="panel-logos" style="margin-bottom: 12px;">
+      <img src="bennett_trans.png" alt="Bennett">
+      <span>×</span>
+      <img src="gfg_trans.png" alt="GFG">
+    </div>
+    <h2 style="font: 900 24px var(--hd); margin: 0 0 6px; color: var(--gfg-bright);">CODE SURVIVAL GUIDE</h2>
+    <p style="color: var(--mut); margin: 0 0 20px; font-size: 14px;">Master the Bennett University server tracks and climb the campus leaderboard.</p>
+
+    <div class="card" style="margin-bottom: 16px; --ac:var(--bu-cyan);">
+      <h3>🎮 MOVEMENT PROTOCOLS</h3>
+      <ul class="ls k">
+        <li><span><kbd>←</kbd><kbd>→</kbd> / <kbd>A</kbd><kbd>D</kbd></span><span><b>Lane Switching:</b> Move between the 3 cyber tracks to collect bytes and dodge barriers.</span></li>
+        <li><span><kbd>↑</kbd> / <kbd>W</kbd> / <kbd>Space</kbd></span><span><b>Jump:</b> Clear Null Pointer pits and low barricades cleanly.</span></li>
+        <li><span><kbd>↓</kbd> / <kbd>S</kbd></span><span><b>Slide & Slam:</b> Duck under overhead laser beams; slams down instantly if pressed mid-air.</span></li>
+      </ul>
+    </div>
+
+    <div class="card" style="margin-bottom: 20px; --ac:var(--gfg-bright);">
+      <h3>💡 HIGH SCORE STRATEGY</h3>
+      <ul class="ls">
+        <li><i style="--c:#00ff88">★</i><b>Fever Chains:</b> Grab 3 identical brackets in a row (<span class="sym">{ }</span>, <span class="sym">[ ]</span>, or <span class="sym">&lt; &gt;</span>) to trigger Algorithm Fever (3x Bytes + 2x Score).</li>
+        <li><i style="--c:#38bdf8">⌕</i><b>Binary Search:</b> Follow the illuminated green neon lane for zero collisions.</li>
+        <li><i style="--c:#f59e0b">⛩</i><b>Boss Gates:</b> Every 1,000 meters, find the open green gate for +500 bonus points!</li>
+      </ul>
+    </div>
+
+    <button class="btn-play-stall" id="guide-play-btn" style="width: 100%;">
+      ▶ START CODE RUSH
+    </button>
+  </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script>
+'use strict';
+
+const $ = i => document.getElementById(i), R = Math.random, LX = [-2.2, 0, 2.2];
+const LS = {
+  g(k, d) { try { return JSON.parse(localStorage.getItem(k)) || d; } catch(e) { return d; } },
+  s(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch(e) {} }
+};
+
+let AX, mute = false;
+function snd(f, d = .1, t = 'square', v = .04, s = 0) {
+  if (mute) return;
+  try {
+    AX = AX || new (window.AudioContext || window.webkitAudioContext)();
+    if (AX.state === 'suspended') AX.resume();
+    const n = AX.currentTime, o = AX.createOscillator(), g = AX.createGain();
+    o.type = t;
+    o.frequency.setValueAtTime(f, n);
+    if (s) o.frequency.exponentialRampToValueAtTime(Math.max(30, f + s), n + d);
+    g.gain.setValueAtTime(v, n);
+    g.gain.exponentialRampToValueAtTime(.001, n + d);
+    o.connect(g).connect(AX.destination);
+    o.start();
+    o.stop(n + d);
+  } catch(e) {}
+}
+
+/* ---------- THREE.JS 3D ARCADE ENGINE ---------- */
+if (!window.THREE) {
+  document.body.insertAdjacentHTML('beforeend', '<div class="nogl">Could not load the 3D graphics engine. Please check internet connection.</div>');
+  throw new Error('three.js missing');
+}
+
+const rd = new THREE.WebGLRenderer({ canvas: $('c'), antialias: devicePixelRatio < 2, powerPreference: 'high-performance' });
+rd.setPixelRatio(Math.min(devicePixelRatio, 1.75));
+
+// Modern Dark Coding Arcade Atmosphere: GFG emerald & Bennett cyan matrix
+const sc = new THREE.Scene();
+sc.background = new THREE.Color(0x020610);
+sc.fog = new THREE.FogExp2(0x030d1a, 0.012);
+
+const cam = new THREE.PerspectiveCamera(65, 1, .1, 300);
+function rs() {
+  rd.setSize(innerWidth, innerHeight);
+  cam.aspect = innerWidth / innerHeight;
+  cam.updateProjectionMatrix();
+}
+addEventListener('resize', rs);
+rs();
+
+sc.add(new THREE.AmbientLight(0x4070a0, 0.95));
+const dl = new THREE.DirectionalLight(0x00ff88, 0.85);
+dl.position.set(3, 10, 5);
+sc.add(dl);
+
+const pl = new THREE.PointLight(0x00ff88, 1.5, 24);
+pl.position.set(0, 3, -2);
+sc.add(pl);
+
+const M = (c, i = .4) => new THREE.MeshLambertMaterial({ color: c, emissive: c, emissiveIntensity: i });
+
+function ctex(w, h, fn, rx, ry) {
+  const c = document.createElement('canvas');
+  c.width = w; c.height = h;
+  fn(c.getContext('2d'), w, h);
+  const t = new THREE.CanvasTexture(c);
+  t.wrapS = t.wrapT = THREE.RepeatWrapping;
+  t.repeat.set(rx, ry);
+  return t;
+}
+
+// Floor texture: GFG emerald neon tracks with Bennett blue boundaries & code matrix
+const fT = ctex(256, 256, (x, w, h) => {
+  x.fillStyle = '#030814';
+  x.fillRect(0, 0, w, h);
+  
+  // Neon GFG green track dividers
+  x.lineWidth = 4;
+  x.strokeStyle = '#00e676';
+  [85, 171].forEach(a => {
+    x.beginPath(); x.moveTo(a, 0); x.lineTo(a, h); x.stroke();
+  });
+  
+  // Bennett cyan outer borders
+  x.strokeStyle = '#0284c7';
+  x.lineWidth = 8;
+  [3, 253].forEach(a => {
+    x.beginPath(); x.moveTo(a, 0); x.lineTo(a, h); x.stroke();
+  });
+  
+  // Cross grid line
+  x.strokeStyle = 'rgba(0, 255, 136, 0.4)';
+  x.lineWidth = 3;
+  x.beginPath(); x.moveTo(0, 1); x.lineTo(w, 1); x.stroke();
+  
+  // Bennett & GFG coding syntax marks
+  x.fillStyle = 'rgba(56, 189, 248, 0.35)';
+  x.font = 'bold 14px "JetBrains Mono", monospace';
+  ['GFG', 'BENNETT', 'O(1)', 'while()', '0xBU', 'malloc'].forEach((s, i) => {
+    x.fillText(s, 16 + (i % 3) * 85, 58 + i * 36);
+  });
+}, 1, 40);
+
+// Side cyber server walls
+const wT = () => ctex(256, 256, (x, w, h) => {
+  x.fillStyle = '#020610';
+  x.fillRect(0, 0, w, h);
+  x.fillStyle = '#00b84f';
+  for (let i = 0; i < 8; i++) x.fillRect(i * 32 + 14, 0, 3, h);
+  x.fillStyle = '#38bdf8';
+  x.fillRect(0, 196, w, 5);
+  x.fillStyle = 'rgba(0, 255, 136, 0.7)';
+  x.fillRect(40, 60, 50, 8);
+  x.fillRect(150, 110, 30, 8);
+}, 40, 1);
+
+const wL = wT(), wR = wT();
+const flMesh = new THREE.Mesh(new THREE.PlaneGeometry(6.6, 240), new THREE.MeshBasicMaterial({ map: fT }));
+flMesh.rotation.x = -Math.PI / 2;
+flMesh.position.z = -100;
+sc.add(flMesh);
+
+[[-4.2, wL, Math.PI / 2], [4.2, wR, -Math.PI / 2]].forEach(([x, t, r]) => {
+  const w = new THREE.Mesh(new THREE.PlaneGeometry(240, 7), new THREE.MeshBasicMaterial({ map: t }));
+  w.position.set(x, 3.5, -100);
+  w.rotation.y = r;
+  sc.add(w);
+});
+
+// Cyber background stars
+{
+  const g = new THREE.BufferGeometry(), a = [];
+  for (let i = 0; i < 500; i++) a.push((R() - .5) * 200, R() * 60 + 8, -R() * 200);
+  g.setAttribute('position', new THREE.Float32BufferAttribute(a, 3));
+  sc.add(new THREE.Points(g, new THREE.PointsMaterial({ color: 0x38bdf8, size: .55, fog: false })));
+}
+
+/* ---------- ATMOSPHERE & ARCHES ---------- */
+function rtex(stops) {
+  const c = document.createElement('canvas');
+  c.width = c.height = 128;
+  const x = c.getContext('2d'), g = x.createRadialGradient(64, 64, 0, 64, 64, 64);
+  stops.forEach(([o, col]) => g.addColorStop(o, col));
+  x.fillStyle = g; x.fillRect(0, 0, 128, 128);
+  return new THREE.CanvasTexture(c);
+}
+
+const GLOW = rtex([[0, 'rgba(255,255,255,1)'], [.25, 'rgba(255,255,255,.45)'], [1, 'rgba(255,255,255,0)']]);
+const glowMat = (c, o = 1) => new THREE.SpriteMaterial({ map: GLOW, color: c, transparent: true, opacity: o, blending: THREE.AdditiveBlending, depthWrite: false });
+
+const HZ = new THREE.Sprite(glowMat(0x00b84f, .95));
+HZ.material.fog = false; HZ.position.set(0, 4, -170); HZ.scale.set(140, 70, 1); sc.add(HZ);
+
+const HZ2 = new THREE.Sprite(glowMat(0x0284c7, .65));
+HZ2.material.fog = false; HZ2.position.set(0, 2, -165); HZ2.scale.set(60, 20, 1); sc.add(HZ2);
+
+const EG = new THREE.EdgesGeometry(new THREE.BoxGeometry(1, 1, 1)), LM = {};
+function edge(o, c) {
+  LM[c] = LM[c] || new THREE.LineBasicMaterial({ color: c });
+  o.add(new THREE.LineSegments(EG, LM[c]));
+  return o;
+}
+
+// Server gateway arches that stream past
+const AR = [], AN = 12, AS = 20, aM = M(0x051329, .25);
+for (let i = 0; i < AN; i++) {
+  const g = new THREE.Group(), c = i % 2 ? 0x00e676 : 0x0284c7;
+  [-4, 4].forEach(x => {
+    const p = new THREE.Mesh(new THREE.BoxGeometry(1, 1, 1), aM);
+    p.scale.set(.45, 7.4, .45); p.position.set(x, 3.7, 0);
+    g.add(edge(p, c));
+  });
+  const t = new THREE.Mesh(new THREE.BoxGeometry(1, 1, 1), aM);
+  t.scale.set(8.9, .4, .6); t.position.y = 7.5;
+  g.add(edge(t, c));
+  const lamp = new THREE.Sprite(glowMat(c, .85));
+  lamp.scale.set(2.4, 2.4, 1); lamp.position.y = 7.5;
+  g.add(lamp);
+  g.position.z = -i * AS;
+  sc.add(g);
+  AR.push(g);
+}
+
+const SHD = new THREE.Mesh(new THREE.PlaneGeometry(1.6, 1.6), new THREE.MeshBasicMaterial({ map: rtex([[0, 'rgba(0,0,0,.75)'], [1, 'rgba(0,0,0,0)']]), transparent: true, depthWrite: false }));
+SHD.rotation.x = -Math.PI / 2; SHD.position.y = .03; sc.add(SHD);
+
+/* ---------- PLAYER ---------- */
+const gB = new THREE.BoxGeometry(1, 1, 1), P = new THREE.Group(), body = new THREE.Group();
+P.add(body); sc.add(P);
+function box(m, sx, sy, sz, x, y, z, p) {
+  const o = new THREE.Mesh(gB, m);
+  o.scale.set(sx, sy, sz); o.position.set(x, y, z);
+  p && p.add(o);
+  return o;
+}
+
+// GFG Green & Bennett Blue Runner Avatar
+box(M(0x00b84f, .55), .7, .9, .45, 0, 1.2, 0, body);
+box(M(0x0284c7, .55), .5, .6, .25, 0, 1.25, .33, body);
+const hd = new THREE.Mesh(new THREE.SphereGeometry(.28, 12, 10), M(0xffd8a8, .3));
+hd.position.y = 1.9; body.add(hd);
+const hat = new THREE.Mesh(new THREE.ConeGeometry(.42, .28, 10), M(0x002b49, .4));
+hat.position.y = 2.15; body.add(hat);
+
+function limb(x, y, w, h, c) {
+  const g = new THREE.Group(); g.position.set(x, y, 0);
+  box(M(c, .4), w, h, w, 0, -h / 2, 0, g);
+  body.add(g);
+  return g;
+}
+const lgL = limb(-.18, .8, .25, .8, 0x0f381e);
+const lgR = limb(.18, .8, .25, .8, 0x0f381e);
+const amL = limb(-.5, 1.6, .2, .7, 0xffd8a8);
+const amR = limb(.5, 1.6, .2, .7, 0xffd8a8);
+const ring = new THREE.Mesh(new THREE.TorusGeometry(1.3, .06, 8, 24), new THREE.MeshBasicMaterial({ color: 0x00ff88 }));
+ring.position.y = 1.2; ring.rotation.x = Math.PI / 2; P.add(ring);
+
+/* Bug Monster: The Compiler Bug */
+const BG = new THREE.Group(); sc.add(BG);
+{
+  const b = new THREE.Mesh(new THREE.SphereGeometry(.9, 14, 10), M(0x7c1fb5, .6));
+  b.scale.set(1.2, .9, 1.1); BG.add(b);
+  [-.35, .35].forEach(x => {
+    const e = new THREE.Mesh(new THREE.SphereGeometry(.17, 8, 8), new THREE.MeshBasicMaterial({ color: 0x00ff88 }));
+    e.position.set(x, .3, -.85); BG.add(e);
+  });
+  for (let i = 0; i < 8; i++) {
+    const a = i / 8 * Math.PI * 2, c = new THREE.Mesh(new THREE.ConeGeometry(.16, .9, 6), M(0xe11d48, .7));
+    c.position.set(Math.cos(a) * 1.1, Math.sin(a) * .8, 0);
+    c.rotation.z = a - Math.PI / 2; BG.add(c);
+  }
+  [-.4, .4].forEach(x => {
+    const m = new THREE.Mesh(new THREE.ConeGeometry(.12, .6, 6), M(0xffffff, 1));
+    m.position.set(x, -.45, -.9); m.rotation.x = -Math.PI / 2; BG.add(m);
+  });
+}
+
+/* ---------- GAME OBJECTS & TEXTURES ---------- */
+const MT = {
+  wall: M(0xe11d48, .7),
+  low: M(0xf59e0b, .8),
+  high: M(0x8b5cf6, .8),
+  pit: new THREE.MeshBasicMaterial({ color: 0x000000 }),
+  fr: new THREE.MeshBasicMaterial({ color: 0xf59e0b }),
+  ok: new THREE.MeshBasicMaterial({ color: 0x00ff88 }),
+  coin: new THREE.MeshBasicMaterial({ color: 0x00ff88 }),
+  fog: new THREE.MeshBasicMaterial({ color: 0x0284c7, transparent: true, opacity: .35, depthWrite: false })
+};
+
+const gSp = new THREE.SphereGeometry(1.6, 10, 8), gC = new THREE.CylinderGeometry(.35, .35, .1, 12);
+gC.rotateX(Math.PI / 2);
+
+const LC = {};
+function lab(t, col, sz, w, h) {
+  const k = t + col + sz;
+  if (!LC[k]) {
+    const c = document.createElement('canvas');
+    c.width = w; c.height = h;
+    const x = c.getContext('2d');
+    x.font = 'bold ' + sz + 'px "JetBrains Mono", monospace';
+    x.textAlign = 'center';
+    x.fillStyle = col;
+    x.shadowColor = col;
+    x.shadowBlur = 12;
+    x.fillText(t, w / 2, h * .7);
+    LC[k] = new THREE.SpriteMaterial({ map: new THREE.CanvasTexture(c), transparent: true, depthWrite: false });
+  }
+  const s = new THREE.Sprite(LC[k]);
+  s.scale.set(4, 1, 1);
+  return s;
+}
+
+const OB = [], CO = [], PK = [];
+let ZB = -115;
+
+function mk(k, x, z, txt, col) {
+  const g = new THREE.Group(), o = { k, x, z, g, hw: 1, hz: .5 };
+  if (k == 'wall') {
+    edge(box(MT.wall, 2, 3, 1.2, 0, 1.5, 0, g), 0xff99bb);
+    o.hz = .7;
+  } else if (k == 'low') {
+    edge(box(MT.low, 2, .9, .8, 0, .45, 0, g), 0xffe29a);
+  } else if (k == 'high') {
+    edge(box(MT.high, 6.6, .7, .6, 0, 2, 0, g), 0xddd6fe);
+    o.hw = 4;
+  } else if (k == 'pit') {
+    box(MT.pit, 6.6, .06, 3, 0, .03, 0, g);
+    box(MT.fr, 6.6, .08, .15, 0, .06, 1.5, g);
+    box(MT.fr, 6.6, .08, .15, 0, .06, -1.5, g);
+    o.hw = 4; o.hz = 1.5;
+  } else if (k == 'fog') {
+    const s = new THREE.Mesh(gSp, MT.fog);
+    s.position.y = 1.5;
+    g.add(s);
+    o.hz = 1.6;
+  }
+  if (txt) {
+    const l = lab(txt, col, 34, 256, 64);
+    l.position.y = k == 'pit' ? 1.3 : k == 'high' ? 3.2 : k == 'low' ? 1.7 : 4;
+    l.scale.set(3.6, .9, 1);
+    g.add(l);
+  }
+  g.position.set(x, 0, z);
+  sc.add(g);
+  OB.push(o);
+}
+
+function gate(z, txt) {
+  const open = R() * 3 | 0, g = new THREE.Group(), o = { k: 'gate', x: 0, z, g, open, hw: 5, hz: .8 };
+  for (let l = 0; l < 3; l++) {
+    if (l == open) {
+      box(MT.ok, .15, 4.5, .3, LX[l] - 1.05, 2.25, 0, g);
+      box(MT.ok, .15, 4.5, .3, LX[l] + 1.05, 2.25, 0, g);
+    } else {
+      edge(box(MT.wall, 2.1, 4.5, .8, LX[l], 2.25, 0, g), 0xff99bb);
+    }
+  }
+  const og = new THREE.Sprite(glowMat(0x00ff88, .8));
+  og.position.set(LX[open], 2.2, .4);
+  og.scale.set(3, 5, 1);
+  g.add(og);
+
+  const l = lab(txt, '#00ff88', 34, 256, 64);
+  l.position.y = 5.4;
+  l.scale.set(6, 1.5, 1);
+  g.add(l);
+  g.position.z = z;
+  sc.add(g);
+  OB.push(o);
+}
+
+const coinGlow = glowMat(0x00ff88, .6);
+function coin(x, y, z) {
+  const m = new THREE.Mesh(gC, MT.coin), h = new THREE.Sprite(coinGlow);
+  h.scale.set(1.5, 1.5, 1);
+  m.add(h);
+  m.position.set(x, y, z);
+  sc.add(m);
+  CO.push({ m, x, y, z });
+}
+
+function coinLine(l, z, n) {
+  for (let i = 0; i < n; i++) coin(LX[l], 1, z - i * 2.2);
+}
+
+const PU = [
+  ['shield', 'STACK SHIELD', '#00ff88', 0x00ff88],
+  ['bs', 'BINARY SEARCH', '#38bdf8', 0x38bdf8],
+  ['queue', 'QUEUE SPRINT', '#f59e0b', 0xf59e0b],
+  ['magnet', 'HASH MAP MAGNET', '#c084fc', 0xc084fc],
+  ['dp', 'DYNAMIC PROG +1 LIFE', '#f472b6', 0xf472b6]
+];
+const SY = [['{ }', '#00ff88'], ['[ ]', '#38bdf8'], ['< >', '#f59e0b']];
+
+function pick(type, i, x, z) {
+  const g = new THREE.Group();
+  g.position.set(x, 1.3, z);
+  let l;
+  if (type == 'pu') {
+    g.add(new THREE.Mesh(new THREE.OctahedronGeometry(.55), M(PU[i][3], 1)));
+    const h = new THREE.Sprite(glowMat(PU[i][3], .75));
+    h.scale.set(2.6, 2.6, 1);
+    g.add(h);
+    l = lab(PU[i][1], PU[i][2], 34, 256, 64);
+    l.position.y = 1.2;
+    l.scale.set(3.4, .85, 1);
+  } else {
+    l = lab(SY[i][0], SY[i][1], 90, 128, 128);
+    l.scale.set(1.8, 1.8, 1);
+  }
+  g.add(l);
+  sc.add(g);
+  PK.push({ type, i, x, z, g });
+}
+
+function spawn() {
+  const d = S.dist, z = ZB, L = R() * 3 | 0, r = R();
+  if (d >= S.nb) {
+    S.nb += 1000;
+    gate(z, 'RUNTIME ERROR');
+    gate(z - 18, 'EXCEPTION');
+    coinLine(1, z - 6, 3);
+    return 40;
+  }
+  if (r < .12) {
+    coinLine(L, z, 9);
+    return 14;
+  }
+  if (r < .24) {
+    mk('pit', 0, z, 'NULL POINTER PIT', '#f59e0b');
+    for (let i = 0; i < 5; i++) coin(LX[L], 1 + 2.1 * Math.sin(i / 4 * Math.PI), z + 2.2 - i * 1.1);
+    return 16;
+  }
+  if (r < .40) {
+    const open = R() < .3 ? [L, (L + 1) % 3] : [L];
+    for (let l = 0; l < 3; l++) {
+      if (!open.includes(l)) mk('wall', LX[l], z, l == (L + 1) % 3 || l == (L + 2) % 3 ? 'STACK OVERFLOW' : 0, '#e11d48');
+    }
+    coinLine(L, z + 9, 5);
+    return 14;
+  }
+  if (r < .50 && d > 150) {
+    const L2 = L;
+    for (let i = 0; i < 4; i++) {
+      for (let l = 0; l < 3; l++) {
+        if (l != (L2 + i) % 3) mk('low', LX[l], z - i * 8, i == 0 && l == (L2 + 1) % 3 ? 'INFINITE LOOP' : 0, '#a855f7');
+      }
+    }
+    return 34;
+  }
+  if (r < .58 && d > 250) {
+    mk('wall', LX[0], z, 'OFF-BY-ONE', '#e11d48');
+    mk('wall', LX[2], z);
+    mk('wall', LX[0], z - 10);
+    mk('wall', LX[1], z - 10);
+    return 30;
+  }
+  if (r < .66) {
+    mk('high', 0, z, 'SEGFAULT BEAM: SLIDE', '#8b5cf6');
+    return 16;
+  }
+  if (r < .72 && d > 200) {
+    mk('fog', LX[L], z, 'MEMORY LEAK', '#0284c7');
+    return 14;
+  }
+  if (R() < .55) pick('pu', R() * 5 | 0, LX[L], z);
+  else {
+    const i = R() * 3 | 0;
+    for (let k = 0; k < 3; k++) pick('sy', i, LX[L], z - k * 6);
+  }
+  return 22;
+}
+
+// Preserve spawn progression
+const spawnPattern = spawn;
+spawn = function() {
+  const spacing = spawnPattern();
+  ZB -= spacing;
+  return spacing;
+};
+
+/* ---------- PARTICLES & EFFECTS ---------- */
+const PN = 300, pp = new Float32Array(PN * 3).fill(-99), pc = new Float32Array(PN * 3), PV = new Float32Array(PN * 4);
+let pi = 0;
+const pg = new THREE.BufferGeometry();
+pg.setAttribute('position', new THREE.BufferAttribute(pp, 3));
+pg.setAttribute('color', new THREE.BufferAttribute(pc, 3));
+const pts = new THREE.Points(pg, new THREE.PointsMaterial({ size: .28, vertexColors: true, transparent: true, blending: THREE.AdditiveBlending, depthWrite: false }));
+pts.frustumCulled = false;
+sc.add(pts);
+
+function emit(x, y, z, col, n = 10) {
+  const c = new THREE.Color(col);
+  for (let i = 0; i < n; i++) {
+    pi = (pi + 1) % PN;
+    pp.set([x, y, z], pi * 3);
+    pc.set([c.r, c.g, c.b], pi * 3);
+    PV.set([(R() - .5) * 7, R() * 6, (R() - .5) * 7, .8], pi * 4);
+  }
+}
+
+const SF = new THREE.Mesh(new THREE.PlaneGeometry(2, 60), new THREE.MeshBasicMaterial({ color: 0x00ff88, transparent: true, opacity: .25, blending: THREE.AdditiveBlending, depthWrite: false }));
+SF.rotation.x = -Math.PI / 2;
+SF.position.set(0, .08, -30);
+SF.visible = false;
+sc.add(SF);
+
+/* ---------- GAME STATE & LEADERBOARD ---------- */
+const newS = () => ({
+  t: 0, dist: 0, bonus: 0, score: 0, coins: 0, lives: 0,
+  sh: 0, inv: 0, queue: 0, bs: 0, mg: 0, fv: 0, fg: 0,
+  col: 0, sp: 15, wait: 0, nb: 1000, nc: 900,
+  sym: { last: -1, n: 0 }, lane: 1, vy: 0, air: 0, sl: 0,
+  bug: 0, shake: 0, rt: 0, safe: 1, ct: 0, ready: 0
+});
+
+let S = newS(), st = 'menu', paused = false, bt;
+
+const AH = LS.g('gfg_bennett_ach', {}), ACH = [
+  ['coin', 'Byte Hoarder', 'Collect 50 bytes in one run'],
+  ['run', 'Marathoner', 'Sprint 1000m on server highway'],
+  ['fever', 'Fever Dream', 'Trigger Algorithm Fever with 3 tokens'],
+  ['shield', 'Stack Guard', 'Block a hit using Stack Shield'],
+  ['boss', 'Exception Handler', 'Clear a Boss Gate cleanly'],
+  ['col', 'Collapse Survivor', 'Survive a Server Collapse milestone']
+];
+
+function rb() {
+  $('bds').innerHTML = ACH.map(a => `<div class="bd ${AH[a[0]] ? '' : 'x'}" title="${a[2]}"><span class="ic">🏅</span><div>${a[1]}<small>${a[2]}</small></div></div>`).join('');
+  $('bdc').textContent = ACH.filter(a => AH[a[0]]).length + ' / ' + ACH.length;
+}
+
+function ban(t, c = '#00ff88') {
+  const b = $('ban');
+  b.textContent = t;
+  b.style.color = c;
+  b.style.textShadow = '0 0 20px ' + c;
+  b.classList.remove('on');
+  void b.offsetWidth;
+  b.classList.add('on');
+  clearTimeout(bt);
+  bt = setTimeout(() => b.classList.remove('on'), 1700);
+}
+
+function ach(id) {
+  if (AH[id]) return;
+  AH[id] = 1;
+  LS.s('gfg_bennett_ach', AH);
+  ban('🏅 BADGE UNLOCKED: ' + ACH.find(a => a[0] == id)[1], '#f59e0b');
+  snd(920, .4, 'sine', .06, 500);
+  rb();
+}
+
+function flash(c) {
+  const f = $('fl');
+  f.style.background = c;
+  f.style.opacity = .5;
+  setTimeout(() => f.style.opacity = 0, 120);
+}
+
+// Bennett Coding Champions Leaderboard
+const SEED = [
+  ['Shashank_CSE', 5450],
+  ['Dijkstra', 5200],
+  ['Aarav_BU25', 4320],
+  ['Priya_Ninja', 3800],
+  ['Ada_Lovelace', 3150],
+  ['Alan_Turing', 2400],
+  ['Tanmay_GFG', 1850],
+  ['NullPtr_Dev', 900]
+];
+
+function board() {
+  let b = LS.g('gfg_bennett_lb', null);
+  if (!b) {
+    b = SEED.map(([n, s]) => ({ n, s, seed: 1 }));
+    LS.s('gfg_bennett_lb', b);
+  }
+  return b;
+}
+
+function updateCampusRecordDisplay() {
+  const b = board();
+  if (b && b.length > 0) {
+    const top = b[0];
+    $('record-score').textContent = top.s.toLocaleString() + ' PTS';
+    $('record-holder').textContent = '(' + top.n + ')';
+    $('hud-target-disp').textContent = top.s.toLocaleString();
+  }
+}
+
+function rlb(hl) {
+  const b = board();
+  const h = b.slice(0, 8).map((e, i) => {
+    let rankBadge = '';
+    if (i === 0) rankBadge = '🥇';
+    else if (i === 1) rankBadge = '🥈';
+    else if (i === 2) rankBadge = '🥉';
+    return `<div class="row r${i + 1} ${e.you === hl ? 'me' : ''}">
+      <span class="n">${rankBadge || String(i + 1).padStart(2, '0')}</span>
+      <span class="who">${e.n.replace(/[<&]/g, '')}${e.seed ? '<em>★</em>' : ''}</span>
+      <span class="s">${e.s.toLocaleString()}</span>
+    </div>`;
+  }).join('');
+  $('lb1').innerHTML = h;
+  $('lb2').innerHTML = h;
+  updateCampusRecordDisplay();
+}
+
+function show(id) {
+  ['menu', 'hud', 'over', 'pz'].forEach(x => $(x).classList.toggle('on', x == id));
+}
+
+function clearAll() {
+  for (const a of [OB, CO, PK]) {
+    a.forEach(o => sc.remove(o.g || o.m));
+    a.length = 0;
+  }
+}
+
+let TOUCH = matchMedia('(pointer:coarse)').matches || false;
+let cdN = 0;
+
+function start() {
+  const n = ($('nick').value.trim() || 'CODER').slice(0, 12);
+  LS.s('gfg_bennett_nick', n);
+  $('hud-nick-disp').textContent = n.toUpperCase();
+
+  clearAll();
+  S = newS();
+  ZB = -40;
+  spawn();
+  ZB = -115;
+  P.visible = true;
+  P.position.set(0, 0, 0);
+  st = 'play';
+  paused = false;
+  S.ready = 3;
+  cdN = 0;
+
+  $('cdh').textContent = TOUCH ? 'SWIPE ← → TO MOVE · ↑ JUMP · ↓ SLIDE' : '← → MOVE · ↑ JUMP · ↓ SLIDE';
+  $('cdh').style.opacity = 1;
+  $('sc').textContent = 0;
+  $('di').textContent = '0m';
+  $('co').textContent = 0;
+  $('fv').style.width = 0;
+  show('hud');
+  chips();
+  snd(440, .15, 'sine', .05, 200);
+}
+
+function countdown(dt) {
+  S.ready -= dt;
+  const n = S.ready > 0 ? Math.ceil(S.ready) : 0;
+  if (n !== cdN) {
+    cdN = n;
+    const e = $('cdn');
+    e.textContent = n || 'CODE!';
+    e.classList.remove('on');
+    void e.offsetWidth;
+    e.classList.add('on');
+    snd(n ? 540 : 1080, n ? .12 : .3, 'sine', .06, n ? 0 : 350);
+    if (!n) {
+      $('cdh').style.opacity = 0;
+      setTimeout(() => { if (!cdN) e.textContent = ''; }, 900);
+    }
+  }
+}
+
+function home() {
+  clearAll();
+  S = newS();
+  st = 'menu';
+  paused = false;
+  rlb();
+  show('menu');
+}
+
+function die() {
+  if (st != 'play') return;
+  st = 'dying';
+  snd(90, .8, 'sawtooth', .1, -60);
+  emit(P.position.x, 1.2, 0, 0xe11d48, 65);
+  P.visible = false;
+  flash('#e11d48');
+
+  const n = ($('nick').value.trim() || 'CODER').slice(0, 12);
+  const b = board();
+  const id = Date.now();
+  const prev = LS.g('gfg_bennett_best', 0);
+  const best = Math.max(S.score, prev);
+  LS.s('gfg_bennett_best', best);
+
+  const topBefore = b.length > 0 ? b[0].s : 0;
+  if (S.score > 0) {
+    b.push({ n, s: S.score, you: id });
+    b.sort((a, c) => c.s - a.s);
+    b.length = Math.min(b.length, 12);
+    LS.s('gfg_bennett_lb', b);
+  }
+
+  const isNewRecord = S.score > topBefore;
+  const rank = board().findIndex(e => e.you === id) + 1;
+
+  setTimeout(() => {
+    $('fs').textContent = S.score.toLocaleString();
+    const nbEl = $('nb');
+    if (isNewRecord && S.score > 0) {
+      nbEl.textContent = '★ NEW BENNETT CAMPUS RECORD! ★';
+      nbEl.classList.add('on');
+    } else if (S.score > prev && S.score > 0) {
+      nbEl.textContent = '★ NEW PERSONAL BEST ★';
+      nbEl.classList.add('on');
+    } else {
+      nbEl.classList.remove('on');
+    }
+
+    const T = (l, v) => `<div class="tile"><small>${l}</small><b>${v}</b></div>`;
+    $('fi').innerHTML =
+      T('BEST', best.toLocaleString()) +
+      T('DISTANCE', Math.floor(S.dist) + 'm') +
+      T('BYTES', S.coins) +
+      (rank ? T('RANK', '#' + rank) : '');
+
+    rlb(id);
+    st = 'over';
+    show('over');
+  }, 900);
+}
+
+/* ---------- GAMEPLAY MECHANICS ---------- */
+function jump() {
+  if (S.air) return;
+  S.vy = 14.5;
+  S.air = 1;
+  S.sl = 0;
+  snd(520, .15, 'square', .04, 400);
+}
+
+function slide() {
+  if (S.air) S.vy = -26;
+  S.sl = .8;
+  snd(220, .12, 'sawtooth', .04, -80);
+}
+
+function mvL(d) {
+  const l = Math.max(0, Math.min(2, S.lane + d));
+  if (l != S.lane) {
+    S.lane = l;
+    snd(380, .06, 'triangle', .03);
+  }
+}
+
+function hurt(o) {
+  if (S.inv > 0 || S.queue > 0) return;
+  const kill = () => { o.dead = 1; o.hit = 1; o.g.visible = false; };
+  if (S.sh) {
+    S.sh = 0; S.inv = 1; kill();
+    ach('shield');
+    flash('#00ff88');
+    ban('STACK SHIELD POPPED', '#00ff88');
+    snd(160, .3, 'square', .07, -60);
+    emit(P.position.x, 1.2, 0, 0x00ff88, 30);
+    return;
+  }
+  if (S.lives > 0) {
+    S.lives--; S.inv = 1.8; kill();
+    S.bug = -1.3; S.shake = .6;
+    flash('#f472b6');
+    ban('EXTRA LIFE USED (DP MEMO)', '#f472b6');
+    snd(130, .4, 'sawtooth', .07, -50);
+    return;
+  }
+  die();
+}
+
+function take(k) {
+  emit(k.x, 1.3, 0, k.type == 'pu' ? PU[k.i][3] : 0xffffff, 20);
+  snd(680, .15, 'triangle', .06, 500);
+  if (k.type == 'pu') {
+    const id = PU[k.i][0];
+    ban(PU[k.i][1], PU[k.i][2]);
+    if (id == 'shield') S.sh = 1;
+    if (id == 'bs') S.bs = 7;
+    if (id == 'queue') S.queue = 5;
+    if (id == 'magnet') S.mg = 9;
+    if (id == 'dp') S.lives = Math.min(3, S.lives + 1);
+  } else {
+    if (S.sym.last == k.i) S.sym.n++;
+    else { S.sym.last = k.i; S.sym.n = 1; }
+    if (S.sym.n >= 3) {
+      S.sym = { last: -1, n: 0 };
+      S.fv = 8;
+      ban('ALGORITHM FEVER ACTIVATED!', '#00ff88');
+      ach('fever');
+      snd(320, .6, 'sawtooth', .06, 900);
+    }
+  }
+}
+
+function safeLane() {
+  const f = [1e9, 1e9, 1e9];
+  for (const o of OB) {
+    if (o.dead || o.z > 0 || o.z < -60) continue;
+    for (let l = 0; l < 3; l++) {
+      if ((o.k == 'wall' || o.k == 'low') && Math.abs(o.x - LX[l]) < 1.3 || o.k == 'gate' && Math.abs(LX[l] - LX[o.open]) > 1) {
+        f[l] = Math.min(f[l], -o.z);
+      }
+    }
+  }
+  return f.indexOf(Math.max(...f));
+}
+
+function chips() {
+  const a = [];
+  if (S.sh) a.push(['🛡 STACK SHIELD', '#00ff88']);
+  if (S.lives) a.push(['♥ DP LIVES x' + S.lives, '#f472b6']);
+  if (S.bs > 0) a.push(['⌕ BINARY SEARCH ' + S.bs.toFixed(1), '#38bdf8']);
+  if (S.queue > 0) a.push(['» QUEUE SPRINT ' + S.queue.toFixed(1), '#f59e0b']);
+  if (S.mg > 0) a.push(['# HASH MAGNET ' + S.mg.toFixed(1), '#c084fc']);
+  if (S.fv > 0) a.push(['★ FEVER ' + S.fv.toFixed(1), '#00ff88']);
+  if (S.fg > 0) a.push(['☁ MEMORY LEAK', '#0284c7']);
+
+  $('bf').innerHTML = a.map(([t, c]) => `<span style="--c:${c}">${t}</span>`).join('');
+  const y = S.sym.last >= 0 ? SY[S.sym.last] : null;
+  $('sy').innerHTML = y ? `<span style="color:${y[1]}">${Array(S.sym.n).fill(y[0]).join(' ')}</span>` : '&nbsp;';
+  S.safe = safeLane();
+}
+
+function step(dt) {
+  S.t += dt;
+  for (const k of ['inv', 'queue', 'bs', 'mg', 'fg']) {
+    if (S[k] > 0) S[k] = Math.max(0, S[k] - dt);
+  }
+  if (S.fv > 0) S.fv = Math.max(0, S.fv - dt);
+
+  const base = Math.min(34, 15 + S.dist * .004 + (S.col > 0 ? 2 : 0));
+  const sp = S.sp = base * (S.queue > 0 ? 1.55 : 1);
+  S.dist += sp * dt;
+  if (S.fv > 0) S.bonus += sp * dt;
+
+  S.wait -= sp * dt;
+  if (S.wait <= 0) S.wait = spawn() + Math.max(10, 26 - S.dist / 120);
+
+  // Player position interpolation
+  const tx = LX[S.lane];
+  P.position.x += (tx - P.position.x) * Math.min(1, dt * 14);
+
+  if (S.air) {
+    S.vy -= 40 * dt;
+    P.position.y += S.vy * dt;
+    if (P.position.y <= 0) {
+      P.position.y = 0; S.vy = 0; S.air = 0;
+      emit(P.position.x, .1, 0, 0x00ff88, 6);
+    }
+  }
+  if (S.sl > 0) S.sl -= dt;
+
+  const px = P.position.x, py = P.position.y, sl = S.sl > 0;
+
+  // World coins with magnet logic
+  for (const c of CO) {
+    if (S.mg > 0 && c.z > -16 && Math.abs(c.x - px) < 7) {
+      c.x += (px - c.x) * Math.min(1, dt * 7);
+      c.y += (py + 1 - c.y) * Math.min(1, dt * 5);
+      c.z += 10 * dt;
+    }
+    c.z += sp * dt;
+    c.m.position.set(c.x, c.y, c.z);
+    c.m.rotation.y += dt * 5;
+  }
+
+  // Obstacles & Pickups forward shift
+  for (const a of [OB, PK]) {
+    for (const o of a) {
+      o.z += sp * dt;
+      (o.g).position.z = o.z;
+    }
+  }
+
+  // Remove passed items
+  for (const a of [OB, CO, PK]) {
+    for (let i = a.length - 1; i >= 0; i--) {
+      if (a[i].z > 10) {
+        sc.remove(a[i].g || a[i].m);
+        a.splice(i, 1);
+      }
+    }
+  }
+
+  // Obstacle collision checks
+  for (const o of OB) {
+    if (o.k == 'gate' && !o.pass && o.z > 1.4) {
+      o.pass = 1;
+      if (!o.hit) {
+        S.bonus += 500;
+        ban('BOSS GATE CLEARED +500', '#00ff88');
+        ach('boss');
+        snd(880, .3, 'sine', .06, 600);
+      }
+    }
+    if (o.dead || Math.abs(o.z) > o.hz + .35) continue;
+    let h = false;
+    if (o.k == 'pit') h = py < .3;
+    else if (o.k == 'high') h = !(sl && py < .3);
+    else if (o.k == 'low') h = py < .95 && Math.abs(o.x - px) < 1.3;
+    else if (o.k == 'wall') h = Math.abs(o.x - px) < 1.35;
+    else if (o.k == 'gate') h = Math.abs(LX[o.open] - px) > 1;
+    else if (o.k == 'fog' && Math.abs(o.x - px) < 1.8) {
+      o.dead = 1; o.g.visible = false;
+      S.fg = 6;
+      ban('MEMORY LEAK FOG', '#0284c7');
+      snd(120, .5, 'sawtooth', .06, -60);
+    }
+    if (h) hurt(o);
+    if (st != 'play') return;
+  }
+
+  // Coin pickups
+  for (let i = CO.length - 1; i >= 0; i--) {
+    const c = CO[i];
+    if (Math.abs(c.z) < 1.1 && Math.abs(c.x - px) < 1.2 && Math.abs(c.y - (py + 1)) < 1.6) {
+      S.coins++;
+      S.bonus += S.fv > 0 ? 30 : 10;
+      snd(1200 + Math.min(S.coins, 30) * 15, .05, 'sine', .04);
+      emit(c.x, c.y, 0, 0x00ff88, 5);
+      sc.remove(c.m);
+      CO.splice(i, 1);
+      if (S.coins >= 50) ach('coin');
+    }
+  }
+
+  // Token & Buff Pickups
+  for (let i = PK.length - 1; i >= 0; i--) {
+    const k = PK[i];
+    k.g.rotation.y += dt * 3;
+    k.g.position.y = 1.3 + Math.sin(S.t * 4 + i) * .2;
+    if (Math.abs(k.z) < 1.1 && Math.abs(k.x - px) < 1.3 && py < 2) {
+      take(k);
+      sc.remove(k.g);
+      PK.splice(i, 1);
+    }
+  }
+
+  // Milestones & score
+  S.score = Math.floor(S.dist + S.bonus);
+  if (S.dist >= 1000) ach('run');
+
+  if (S.score >= S.nc) {
+    S.nc += 1400;
+    S.col = 3; S.shake = 1;
+    flash('#f59e0b');
+    ban('⚠ SERVER COLLAPSE IMMINENT ⚠', '#f59e0b');
+    snd(70, 1.2, 'sawtooth', .1, -30);
+  }
+  if (S.col > 0) {
+    S.col -= dt;
+    S.shake = Math.max(S.shake, .7);
+    emit(R() * 10 - 5, 9, -R() * 25, 0x00ff88, 2);
+    if (S.col <= 0) ach('col');
+  }
+
+  S.bug = Math.min(0, S.bug + dt * .7);
+  S.shake = Math.max(0, S.shake - dt * .8);
+
+  S.ct -= dt;
+  if (S.ct <= 0) {
+    S.ct = .15;
+    chips();
+    SF.visible = S.bs > 0;
+  }
+  if (S.bs > 0) SF.position.x += (LX[S.safe] - SF.position.x) * Math.min(1, dt * 10);
+
+  $('sc').textContent = S.score.toLocaleString();
+  $('di').textContent = Math.floor(S.dist) + 'm';
+  $('co').textContent = S.coins;
+  $('fv').style.width = (S.fv / 8 * 100) + '%';
+}
+
+function world(dt, sp) {
+  const u = sp * dt / 6;
+  fT.offset.y += u;
+  wL.offset.x += u;
+  wR.offset.x -= u;
+
+  S.rt += dt * (6 + sp * .45);
+  const s = Math.sin(S.rt), air = P.position.y > .05;
+
+  lgL.rotation.x = air ? .8 : s * .9;
+  lgR.rotation.x = air ? -.6 : -s * .9;
+  amL.rotation.x = air ? -1.4 : -s * .8;
+  amR.rotation.x = air ? -1.4 : s * .8;
+
+  body.position.y = air ? 0 : Math.abs(s) * .07;
+  body.scale.y = S.sl > 0 ? .5 : 1;
+  P.visible = st == 'dying' || st == 'over' ? false : true;
+
+  ring.visible = !!S.sh;
+  ring.rotation.z += dt * 3;
+  body.visible = S.inv > 0 ? Math.floor(S.t * 20) % 2 == 0 : true;
+
+  BG.position.set(P.position.x * .8, .95 + Math.sin(S.rt * 1.5) * .15, 3.2 + S.bug + (S.queue > 0 ? 2.5 : 0));
+  BG.rotation.z = Math.sin(S.rt) * .12;
+  BG.scale.setScalar(1 + Math.sin(S.rt * 2) * .05);
+
+  for (const a of AR) {
+    a.position.z += sp * dt;
+    if (a.position.z > 12) a.position.z -= AN * AS;
+  }
+
+  SHD.visible = P.visible;
+  SHD.position.x = P.position.x;
+  SHD.scale.setScalar(Math.max(.35, 1 - P.position.y * .18));
+  SHD.material.opacity = Math.max(.2, 1 - P.position.y * .15);
+
+  HZ.material.color.set(S.fv > 0 ? 0x00ff88 : S.col > 0 ? 0xe11d48 : 0x00b84f);
+  HZ.scale.x = 140 + Math.sin(S.rt * .3) * 8;
+
+  pl.position.set(P.position.x, 3, -2);
+  pl.color.set(S.fv > 0 ? 0x00ff88 : 0x38bdf8);
+
+  for (let i = 0; i < PN; i++) {
+    if (PV[i * 4 + 3] > 0) {
+      PV[i * 4 + 3] -= dt;
+      PV[i * 4 + 1] -= 9 * dt;
+      pp[i * 3] += PV[i * 4] * dt;
+      pp[i * 3 + 1] += PV[i * 4 + 1] * dt;
+      pp[i * 3 + 2] += PV[i * 4 + 2] * dt;
+      if (PV[i * 4 + 3] <= 0) pp[i * 3 + 1] = -99;
+    }
+  }
+  pg.attributes.position.needsUpdate = true;
+  pg.attributes.color.needsUpdate = true;
+
+  if (S.fv > 0 && st == 'play') emit(P.position.x, .2, 0, 0x00ff88, 1);
+
+  const sh = S.shake * .5;
+  const tf = (cam.aspect < .8 ? 78 : 65) + (S.fv > 0 ? 10 : 0) + (S.queue > 0 ? 10 : 0);
+  cam.fov += (tf - cam.fov) * Math.min(1, dt * 5);
+  cam.updateProjectionMatrix();
+
+  sc.fog.density += ((S.fg > 0 ? .075 : .012) - sc.fog.density) * Math.min(1, dt * 3);
+  cam.position.set(P.position.x * .5 + (R() - .5) * sh, 4.6 + P.position.y * .25 + (R() - .5) * sh, 8.2);
+  cam.lookAt(P.position.x * .3, 1.4, -7);
+}
+
+let last = performance.now();
+function loop(t) {
+  requestAnimationFrame(loop);
+  const dt = Math.min(.05, (t - last) / 1000);
+  last = t;
+  if (st == 'play') {
+    if (!paused) {
+      if (S.ready > 0) {
+        countdown(dt);
+        world(dt, 0);
+      } else {
+        if (cdN) countdown(0);
+        step(dt);
+        world(dt, S.sp);
+      }
+    }
+  } else {
+    world(dt, st == 'menu' ? 12 : 0);
+  }
+  rd.render(sc, cam);
+}
+
+/* ---------- INPUT & CONTROLS ---------- */
+addEventListener('keydown', e => {
+  const k = e.code;
+  if (k == 'KeyM') return tm();
+  if ((st == 'over' || st == 'menu') && k == 'Enter') {
+    e.preventDefault();
+    return start();
+  }
+  if (st != 'play') return;
+  if (k == 'KeyP' || k == 'Escape') return pause(!paused);
+  if (paused || S.ready > 0) return;
+
+  if (k == 'ArrowLeft' || k == 'KeyA') mvL(-1);
+  else if (k == 'ArrowRight' || k == 'KeyD') mvL(1);
+  else if (k == 'ArrowUp' || k == 'KeyW' || k == 'Space') {
+    e.preventDefault();
+    jump();
+  } else if (k == 'ArrowDown' || k == 'KeyS') {
+    e.preventDefault();
+    slide();
+  }
+});
+
+let tx0 = null, ty0 = 0;
+addEventListener('touchstart', e => {
+  tx0 = e.touches[0].clientX;
+  ty0 = e.touches[0].clientY;
+}, { passive: true });
+
+addEventListener('touchmove', e => {
+  if (st != 'play' || tx0 == null) return;
+  e.preventDefault();
+  if (paused || S.ready > 0) return;
+  const dx = e.touches[0].clientX - tx0, dy = e.touches[0].clientY - ty0;
+  if (Math.max(Math.abs(dx), Math.abs(dy)) < 26) return;
+  if (Math.abs(dx) > Math.abs(dy)) mvL(dx > 0 ? 1 : -1);
+  else dy < 0 ? jump() : slide();
+  tx0 = null;
+}, { passive: false });
+
+addEventListener('touchend', () => { tx0 = null; });
+
+function pause(p) {
+  if (st != 'play') return;
+  paused = p;
+  $('pz').classList.toggle('on', p);
+}
+
+function tm() {
+  mute = !mute;
+  $('mt').textContent = mute ? '🔇' : '🔊';
+  $('top-mt').textContent = mute ? '🔇' : '🔊';
+}
+
+function toggleFullscreen() {
+  if (!document.fullscreenElement) {
+    document.documentElement.requestFullscreen().catch(() => {});
+  } else {
+    if (document.exitFullscreen) document.exitFullscreen().catch(() => {});
+  }
+}
+
+function toggleTouchControls() {
+  const tc = $('touch-controls');
+  tc.classList.toggle('active');
+  const on = tc.classList.contains('active');
+  $('btn-kiosk-touch').classList.toggle('highlight', on);
+}
+
+function nextRunner() {
+  $('nick').value = '';
+  $('nick').focus();
+  home();
+}
+
+// Modal logic
+const guideModal = $('guide-modal');
+function openGuide() { guideModal.classList.add('open'); }
+function closeGuide() { guideModal.classList.remove('open'); }
+
+$('guide-close').onclick = closeGuide;
+guideModal.onclick = e => { if (e.target === guideModal) closeGuide(); };
+$('btn-guide').onclick = openGuide;
+$('qa-guide').onclick = openGuide;
+$('guide-play-btn').onclick = () => { closeGuide(); start(); };
+
+// Buttons
+$('mt').onclick = tm;
+$('top-mt').onclick = tm;
+$('pb').onclick = () => pause(true);
+$('rsm').onclick = () => pause(false);
+$('pm').onclick = home;
+$('pz').onclick = e => { if (e.target.id == 'pz') pause(false); };
+$('play').onclick = start;
+$('again').onclick = start;
+$('home').onclick = home;
+$('qa-next').onclick = nextRunner;
+
+$('btn-fs').onclick = toggleFullscreen;
+$('hud-fs-btn').onclick = toggleFullscreen;
+$('btn-kiosk-touch').onclick = toggleTouchControls;
+
+// On-screen touch buttons for kiosks
+$('btn-t-left').onclick = e => { e.stopPropagation(); mvL(-1); };
+$('btn-t-right').onclick = e => { e.stopPropagation(); mvL(1); };
+$('btn-t-jump').onclick = e => { e.stopPropagation(); jump(); };
+$('btn-t-slide').onclick = e => { e.stopPropagation(); slide(); };
+
+// Smooth scroll to sections
+$('qa-lb').onclick = () => {
+  $('card-lb').scrollIntoView({ behavior: 'smooth' });
+};
+$('qa-qr').onclick = () => {
+  $('card-qr').scrollIntoView({ behavior: 'smooth' });
+};
+
+document.addEventListener('visibilitychange', () => {
+  if (document.hidden) pause(true);
+});
+
+// Auto-enable touch controls if touch device
+if (TOUCH) {
+  $('touch-controls').classList.add('active');
+  $('btn-kiosk-touch').classList.add('highlight');
+}
+
+// Initialise storage and start animation
+$('nick').value = LS.g('gfg_bennett_nick', '');
+rlb();
+rb();
+show('menu');
+requestAnimationFrame(loop);
+</script>
+</body>
+</html>
