@@ -820,7 +820,7 @@ kbd {
 
 #fi {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(88px, 1fr));
+  grid-template-columns: repeat(3, 1fr);
   gap: 8px;
   width: 100%;
 }
@@ -829,6 +829,7 @@ kbd {
   border: 1px solid var(--line-bu);
   border-radius: 12px;
   padding: 8px 6px;
+  text-align: center;
 }
 .tile small {
   display: block;
@@ -1198,6 +1199,39 @@ kbd {
     padding: 6px 10px 7px;
   }
   #sy { font-size: 14px; min-height: 18px; }
+
+  /* Game Over Mobile Sizing */
+  #over .panel {
+    gap: 8px;
+    max-width: 330px;
+    margin: auto 0;
+  }
+  #over h1 {
+    font-size: clamp(26px, 7.5vw, 38px);
+    letter-spacing: .02em;
+  }
+  #over .big {
+    font-size: clamp(38px, 11vw, 54px);
+  }
+  .tile {
+    padding: 6px 4px;
+    border-radius: 10px;
+  }
+  .tile small {
+    font-size: 8px;
+    letter-spacing: .1em;
+  }
+  .tile b {
+    font-size: 14px;
+  }
+  .row2 {
+    gap: 8px;
+    margin-top: 4px;
+  }
+  .row2 .btn {
+    height: 48px;
+    font-size: 13px;
+  }
 }
 
 @media (max-height: 500px) and (orientation: landscape) {

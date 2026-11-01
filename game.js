@@ -518,72 +518,21 @@ function flash(c) {
   setTimeout(() => f.style.opacity = 0, 110);
 }
 
-// Genuine Bennett Coding Champions Leaderboard
-function board() {
-  let b = LS.g('gfg_bennett_lb', null);
-  if (Array.isArray(b)) {
-    b = b.filter(e => !e.seed);
-  } else {
-    b = [];
-  }
-  LS.s('gfg_bennett_lb', b);
-  return b;
-}
-
+// Genuine Personal Best Display
 function updateCampusRecordDisplay() {
-  const b = board();
-  if (b && b.length > 0) {
-    const top = b[0];
-    $('record-title').textContent = 'BENNETT CAMPUS RECORD:';
-    $('record-score').textContent = top.s.toLocaleString() + ' PTS';
-    $('record-holder').textContent = '(' + top.n + ')';
-    $('hud-target-disp').textContent = top.s.toLocaleString();
-  } else {
-    $('record-title').textContent = 'CAMPUS STALL ARCADE:';
-    $('record-score').textContent = 'READY';
-    $('record-holder').textContent = '(Be First!)';
-    $('hud-target-disp').textContent = '---';
+  const best = LS.g('gfg_bennett_best', 0);
+  const banner = $('campus-banner');
+  if (banner) {
+    if (best > 0) {
+      $('record-title').textContent = 'PERSONAL BEST:';
+      $('record-score').textContent = best.toLocaleString() + ' PTS';
+      banner.style.display = 'inline-flex';
+    } else {
+      banner.style.display = 'none';
+    }
   }
-}
-
-function rlb(hl) {
-  const b = board();
-  if (!b || b.length === 0) {
-    const emptyHtml = `
-      <div class="empty-lb">
-        <span class="empty-icon">🏆</span>
-        <div class="empty-text">No runs recorded yet</div>
-        <small class="empty-sub">Play a run to claim the #1 spot on campus!</small>
-      </div>`;
-    if ($('lb1')) $('lb1').innerHTML = emptyHtml;
-    if ($('lb2')) $('lb2').innerHTML = emptyHtml;
-    updateCampusRecordDisplay();
-    return;
-  }
-
-  const h = b.slice(0, 10).map((e, i) => {
-    let rankBadge = '';
-    if (i === 0) rankBadge = '🥇';
-    else if (i === 1) rankBadge = '🥈';
-    else if (i === 2) rankBadge = '🥉';
-    return `<div class="row r${i + 1} ${e.you === hl ? 'me' : ''}">
-      <span class="n">${rankBadge || String(i + 1).padStart(2, '0')}</span>
-      <span class="who">${e.n.replace(/[<&]/g, '')}</span>
-      <span class="s">${e.s.toLocaleString()}</span>
-    </div>`;
-  }).join('');
-
-  if ($('lb1')) $('lb1').innerHTML = h;
-  if ($('lb2')) $('lb2').innerHTML = h;
-  updateCampusRecordDisplay();
-}
-
-function clearLeaderboard() {
-  if (confirm('Clear all recorded scores on this machine for a fresh stall session?')) {
-    LS.s('gfg_bennett_lb', []);
-    LS.s('gfg_bennett_best', 0);
-    rlb();
-    updateCampusRecordDisplay();
+  if ($('hud-target-disp')) {
+    $('hud-target-disp').textContent = best > 0 ? best.toLocaleString() : '0';
   }
 }
 
@@ -656,7 +605,7 @@ function home() {
   S = newS();
   st = 'menu';
   paused = false;
-  rlb();
+  updateCampusRecordDisplay();
   show('menu');
 }
 
@@ -669,32 +618,16 @@ function die() {
   P.visible = false;
   flash('#e11d48');
 
-  const n = ($('nick').value.trim() || 'CODER').slice(0, 12);
-  const b = board();
-  const id = Date.now();
   const prev = LS.g('gfg_bennett_best', 0);
+  const isNewBest = S.score > prev && S.score > 0;
   const best = Math.max(S.score, prev);
   LS.s('gfg_bennett_best', best);
-
-  const topBefore = b.length > 0 ? b[0].s : 0;
-  if (S.score > 0) {
-    b.push({ n, s: S.score, you: id });
-    b.sort((a, c) => c.s - a.s);
-    b.length = Math.min(b.length, 12);
-    LS.s('gfg_bennett_lb', b);
-  }
-
-  const isNewRecord = S.score > topBefore;
-  const rank = board().findIndex(e => e.you === id) + 1;
 
   setTimeout(() => {
     $('fs').textContent = S.score.toLocaleString();
     const nbEl = $('nb');
-    if (isNewRecord && S.score > 0) {
-      nbEl.textContent = '★ NEW BENNETT CAMPUS RECORD! ★';
-      nbEl.classList.add('on');
-    } else if (S.score > prev && S.score > 0) {
-      nbEl.textContent = '★ NEW PERSONAL BEST ★';
+    if (isNewBest) {
+      nbEl.textContent = '★ NEW BEST SCORE! ★';
       nbEl.classList.add('on');
     } else {
       nbEl.classList.remove('on');
@@ -702,12 +635,11 @@ function die() {
 
     const T = (l, v) => `<div class="tile"><small>${l}</small><b>${v}</b></div>`;
     $('fi').innerHTML =
-      T('BEST', best.toLocaleString()) +
+      T('PERSONAL BEST', best.toLocaleString()) +
       T('DISTANCE', Math.floor(S.dist) + 'm') +
-      T('BYTES', S.coins) +
-      (rank ? T('RANK', '#' + rank) : '');
+      T('BYTES', S.coins);
 
-    rlb(id);
+    updateCampusRecordDisplay();
     st = 'over';
     show('over');
   }, 800);
@@ -1176,34 +1108,23 @@ function nextRunner() {
 
 // Modal logic
 const guideModal = $('guide-modal');
-const lbModal = $('lb-modal');
 const qrModal = $('qr-modal');
 
-function openGuide() { guideModal.classList.add('open'); }
-function closeGuide() { guideModal.classList.remove('open'); }
-function openLB() { rlb(); lbModal.classList.add('open'); }
-function closeLB() { lbModal.classList.remove('open'); }
-function openQR() { qrModal.classList.add('open'); }
-function closeQR() { qrModal.classList.remove('open'); }
+function openGuide() { if (guideModal) guideModal.classList.add('open'); }
+function closeGuide() { if (guideModal) guideModal.classList.remove('open'); }
+function openQR() { if (qrModal) qrModal.classList.add('open'); }
+function closeQR() { if (qrModal) qrModal.classList.remove('open'); }
 
-$('guide-close').onclick = closeGuide;
-$('lb-close').onclick = closeLB;
-$('qr-close').onclick = closeQR;
+if ($('guide-close')) $('guide-close').onclick = closeGuide;
+if ($('qr-close')) $('qr-close').onclick = closeQR;
 
-guideModal.onclick = e => { if (e.target === guideModal) closeGuide(); };
-lbModal.onclick = e => { if (e.target === lbModal) closeLB(); };
-qrModal.onclick = e => { if (e.target === qrModal) closeQR(); };
+if (guideModal) guideModal.onclick = e => { if (e.target === guideModal) closeGuide(); };
+if (qrModal) qrModal.onclick = e => { if (e.target === qrModal) closeQR(); };
 
-$('btn-guide').onclick = openGuide;
-$('qa-guide').onclick = openGuide;
-$('guide-play-btn').onclick = () => { closeGuide(); start(); };
-
-$('btn-top-lb').onclick = openLB;
-$('qa-lb').onclick = openLB;
-if ($('lb-play-btn')) $('lb-play-btn').onclick = () => { closeLB(); start(); };
-if ($('btn-clear-lb')) $('btn-clear-lb').onclick = clearLeaderboard;
-
-$('qa-qr').onclick = openQR;
+if ($('btn-guide')) $('btn-guide').onclick = openGuide;
+if ($('qa-guide')) $('qa-guide').onclick = openGuide;
+if ($('guide-play-btn')) $('guide-play-btn').onclick = () => { closeGuide(); start(); };
+if ($('qa-qr')) $('qa-qr').onclick = openQR;
 
 // Core Arcade Buttons
 $('mt').onclick = tm;
@@ -1226,6 +1147,6 @@ document.addEventListener('visibilitychange', () => {
 
 // Initialise storage and start animation
 $('nick').value = LS.g('gfg_bennett_nick', '');
-rlb();
+updateCampusRecordDisplay();
 show('menu');
 requestAnimationFrame(loop);

@@ -42,7 +42,6 @@
   </div>
 
   <div class="arcade-tools">
-    <button class="tool-btn" id="btn-top-lb"><span>CHAMPIONS</span> 🏆</button>
     <button class="tool-btn highlight" id="btn-guide"><span>GUIDE</span> ℹ️</button>
     <button class="tool-btn" id="btn-fs"><span>FULLSCREEN</span> ⛶</button>
     <button class="tool-btn" id="top-mt">🔊</button>
@@ -64,12 +63,11 @@
     <div class="tagline">Think Fast. Code Smart. Survive the Bugs.</div>
     <div class="powered-by">Powered by <strong>GeeksforGeeks</strong> | Bennett University Coding Club</div>
 
-    <!-- Campus Live Record Badge (Shows real player scores only) -->
-    <div class="campus-banner" id="campus-banner">
+    <!-- Personal High Score Badge (Genuine local score only) -->
+    <div class="campus-banner" id="campus-banner" style="display: none;">
       <span class="trophy">🏆</span>
-      <span class="cb-title" id="record-title">BENNETT CAMPUS RECORD:</span>
-      <span class="cb-score" id="record-score">READY</span>
-      <span class="cb-holder" id="record-holder">(Be First!)</span>
+      <span class="cb-title" id="record-title">PERSONAL BEST:</span>
+      <span class="cb-score" id="record-score">0 PTS</span>
     </div>
 
     <!-- Play Now & Coder Handle Input -->
@@ -86,7 +84,6 @@
 
     <!-- Clean Quick Actions (Opens clean modals) -->
     <div class="quick-actions">
-      <button class="qa-btn" id="qa-lb">🏆 <span>CAMPUS LEADERBOARD</span></button>
       <button class="qa-btn" id="qa-guide">📖 <span>HOW TO PLAY</span></button>
       <button class="qa-btn" id="qa-qr">📱 <span>JOIN GFG BU</span></button>
       <button class="qa-btn desktop-only" id="qa-next">👤 <span>NEXT CODER</span></button>
@@ -118,8 +115,8 @@
 
     <div class="hud-right">
       <div class="target-box">
-        CAMPUS BEST
-        <b id="hud-target-disp">---</b>
+        HIGH SCORE
+        <b id="hud-target-disp">0</b>
       </div>
       <button class="hud-btn" id="pb" aria-label="Pause">⏸</button>
       <button class="hud-btn" id="mt" aria-label="Toggle sound">🔊</button>
@@ -141,7 +138,7 @@
 
 <div id="fl"></div>
 
-<!-- GAME OVER SCREEN (RUN REPORT & ACTUAL LEADERBOARD) -->
+<!-- GAME OVER SCREEN (CLEAN RUN REPORT - NO MOCK SCOREBOARD) -->
 <div id="over" class="scr">
   <div class="panel">
     <div class="panel-logos">
@@ -154,18 +151,12 @@
 
     <div class="lbl">FINAL SCORE</div>
     <div class="big" id="fs">0</div>
-    <span id="nb">★ NEW BENNETT CAMPUS RECORD ★</span>
+    <span id="nb">★ NEW PERSONAL BEST! ★</span>
 
     <div id="fi"></div>
 
-    <!-- Real Leaderboard on Game Over -->
-    <div class="card lb" style="--ac:var(--gold)">
-      <h3>🏆 BENNETT CODING CHAMPIONS</h3>
-      <div id="lb2"></div>
-    </div>
-
     <div class="row2">
-      <button class="btn btn-primary" id="again">▶ NEXT RUNNER / RETRY</button>
+      <button class="btn btn-primary" id="again">▶ PLAY AGAIN / RETRY</button>
       <button class="btn btn-secondary" id="home">ARCADE MENU</button>
     </div>
     <div class="stall-hint">Press <kbd>Enter</kbd> to start next runner's challenge</div>
@@ -227,33 +218,6 @@
     <button class="btn-play-stall" id="guide-play-btn" style="width: 100%;">
       ▶ START CODE RUSH
     </button>
-  </div>
-</div>
-
-<!-- LEADERBOARD MODAL (REAL CAMPUS DATA ONLY) -->
-<div class="modal-overlay" id="lb-modal">
-  <div class="modal-box">
-    <button class="modal-close" id="lb-close">✕</button>
-    <div class="panel-logos" style="margin-bottom: 12px;">
-      <img src="bennett_trans.png" alt="Bennett">
-      <span>×</span>
-      <img src="gfg_trans.png" alt="GFG">
-    </div>
-    <h2 style="font: 900 24px var(--hd); margin: 0 0 6px; color: var(--gold);">BENNETT CODING CHAMPIONS</h2>
-    <p style="color: var(--mut); margin: 0 0 16px; font-size: 14px;">Official campus high scores from the coding club stall showcase.</p>
-
-    <div class="card lb" style="margin-bottom: 20px; --ac:var(--gold); border-color: rgba(245, 158, 11, 0.35);">
-      <div id="lb1"></div>
-    </div>
-
-    <div style="display: flex; gap: 12px; justify-content: space-between; align-items: center;">
-      <button class="qa-btn" id="btn-clear-lb" style="color: var(--bu-red); border-color: rgba(225, 29, 72, 0.4);">
-        🗑 RESET SCORES
-      </button>
-      <button class="btn-play-stall" id="lb-play-btn" style="height: 48px; padding: 0 28px; font-size: 15px;">
-        ▶ BEAT THE RECORD
-      </button>
-    </div>
   </div>
 </div>
 
