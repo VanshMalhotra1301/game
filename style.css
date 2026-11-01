@@ -351,18 +351,17 @@ h1.game-title {
 
 .field {
   position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  width: 100%;
 }
-.field label {
-  position: absolute;
-  left: 14px;
-  top: -8px;
-  font: 800 9px var(--hd);
+.field label, .field-label {
+  font: 800 10px var(--hd);
   letter-spacing: .2em;
   color: var(--gfg-bright);
-  background: var(--bg);
-  padding: 0 6px;
-  border-radius: 4px;
-  border: 1px solid rgba(0, 255, 136, 0.3);
+  text-transform: uppercase;
 }
 
 input#nick {
@@ -673,59 +672,25 @@ kbd {
   transition: width .15s linear;
 }
 
-/* On-Screen Touch / Kiosk Controls */
-#touch-controls {
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
+/* Mobile Gesture Prompt */
+.mobile-swipe-hint {
   display: none;
-  z-index: 15;
-}
-#touch-controls.active { display: block; }
-
-.touch-pad-left {
-  position: absolute;
-  bottom: calc(18px + var(--sab));
-  left: calc(16px + var(--sal));
-  display: flex;
-  gap: 10px;
-  pointer-events: auto;
-}
-.touch-pad-right {
-  position: absolute;
-  bottom: calc(18px + var(--sab));
-  right: calc(16px + var(--sar));
-  display: flex;
-  gap: 10px;
-  pointer-events: auto;
-}
-.touch-btn {
-  width: 58px;
-  height: 58px;
-  border-radius: 16px;
-  background: rgba(6, 20, 36, 0.72);
-  border: 1.5px solid var(--line-bu);
-  backdrop-filter: blur(10px);
-  display: grid;
-  place-items: center;
-  font: 900 18px var(--hd);
-  color: #fff;
-  box-shadow: 0 8px 20px -6px rgba(0,0,0,0.8);
-  user-select: none;
-  touch-action: none;
-  transition: transform .1s, background .1s, border-color .1s;
-}
-.touch-btn:active {
-  transform: scale(0.92);
-  background: rgba(0, 184, 79, 0.4);
-  border-color: var(--gfg-bright);
-}
-.touch-btn.jump {
-  border-color: rgba(0, 255, 136, 0.5);
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 14px;
+  font: 700 11px var(--mono);
   color: var(--gfg-bright);
+  letter-spacing: .15em;
+  text-transform: uppercase;
+  padding: 6px 16px;
+  background: rgba(0, 184, 79, 0.08);
+  border: 1px solid rgba(0, 255, 136, 0.25);
+  border-radius: 99px;
+  box-shadow: 0 0 12px -4px rgba(0, 255, 136, 0.3);
 }
-.touch-btn.slide {
-  border-color: rgba(245, 158, 11, 0.5);
+.mobile-swipe-hint span {
+  font-size: 13px;
   color: var(--gold);
 }
 
@@ -1066,87 +1031,134 @@ kbd {
 /* ---------- MOBILE RESPONSIVE OPTIMIZATIONS ---------- */
 @media (max-width: 768px) {
   .arcade-header {
-    height: calc(52px + var(--sat));
-    padding: var(--sat) 12px 0;
+    height: calc(48px + var(--sat));
+    padding: var(--sat) 10px 0;
   }
-  .brand-unit img { height: 28px; }
-  .brand-meta .title { font-size: 10px; }
+  .brand-collab { gap: 6px; }
+  .brand-unit { gap: 6px; }
+  .brand-unit img { height: 26px; }
+  .brand-meta .title { font-size: 10px; letter-spacing: .04em; }
   .brand-meta .sub { display: none; }
-  .tool-btn { padding: 0 8px; height: 30px; font-size: 9px; }
+  .collab-cross { font-size: 11px; padding: 0 1px; }
+  .tool-btn { padding: 0 8px; height: 30px; font-size: 12px; }
   .tool-btn span { display: none; }
+  #btn-fs { display: none !important; }
 
   #menu {
-    padding: calc(58px + var(--sat)) 12px calc(16px + var(--sab));
+    padding: calc(52px + var(--sat)) 12px calc(14px + var(--sab));
+    justify-content: center;
   }
-  .hero-logos-wrap {
-    padding: 6px 16px;
-    gap: 12px;
-    margin: 4px 0 8px;
+  .hero {
+    margin: auto 0;
+    width: 100%;
+    max-width: 360px;
   }
-  .hero-logos-wrap .h-logo { height: 42px; }
-  .hero-logos-wrap .h-divider { font-size: 16px; }
+  
+  /* Hide redundant logos and stall tag on mobile so hero is clean and uncrowded */
+  .stall-tag { display: none !important; }
+  .hero-logos-wrap { display: none !important; }
 
   h1.game-title {
-    font-size: clamp(30px, 9vw, 56px);
+    font-size: clamp(24px, 7.5vw, 36px);
+    line-height: 1.08;
+    letter-spacing: .02em;
+    filter: drop-shadow(0 0 14px rgba(0, 255, 136, 0.45));
   }
   .tagline {
-    font-size: clamp(11px, 2.8vw, 14px);
-    letter-spacing: .18em;
+    font-size: 11px;
+    letter-spacing: .14em;
+    margin: 4px 0 0;
   }
-  .powered-by { font-size: 10px; }
+  .powered-by {
+    font-size: 9.5px;
+    margin-top: 4px;
+    letter-spacing: .03em;
+    text-align: center;
+    justify-content: center;
+    white-space: normal;
+  }
+
   .campus-banner {
-    padding: 5px 14px;
-    gap: 8px;
-    margin-top: 10px;
+    margin: 10px auto 12px;
+    padding: 5px 12px;
+    gap: 6px;
+    font-size: 10px;
+    max-width: 95%;
+    border-radius: 99px;
   }
-  .campus-banner .cb-title { font-size: 9px; }
+  .campus-banner .cb-title { font-size: 9px; letter-spacing: .08em; }
   .campus-banner .cb-score { font-size: 12px; }
+  .campus-banner .cb-holder { font-size: 10px; }
 
   .start-box {
     flex-direction: column;
     width: 100%;
-    max-width: 300px;
-    gap: 10px;
-    margin-top: 16px;
+    max-width: 280px;
+    gap: 8px;
+    margin-top: 8px;
+  }
+  .field {
+    width: 100%;
+    gap: 4px;
+  }
+  .field label, .field-label {
+    font-size: 9px;
+    letter-spacing: .15em;
   }
   input#nick {
     width: 100%;
-    height: 50px;
+    height: 46px;
     font-size: 15px;
+    border-radius: 12px;
     text-align: center;
   }
   .btn-play-stall {
     width: 100%;
-    height: 52px;
+    height: 50px;
     font-size: 15px;
+    border-radius: 12px;
+    padding: 0 20px;
+    box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.3) inset, 0 8px 24px -4px rgba(0, 255, 136, 0.6);
+  }
+  .btn-play-stall .coin-hint {
+    font-size: 9px;
+    padding: 2px 6px;
   }
 
   .quick-actions {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    gap: 5px;
     width: 100%;
-    max-width: 300px;
-    gap: 6px;
-    margin-top: 10px;
+    max-width: 320px;
+    margin-top: 8px;
   }
   .qa-btn {
-    height: 36px;
+    height: 34px;
     padding: 0 8px;
     font-size: 10px;
-    letter-spacing: .04em;
+    border-radius: 8px;
+    letter-spacing: .03em;
+    flex: 1 1 0;
+    min-width: 0;
+    white-space: nowrap;
+    justify-content: center;
+  }
+  .qa-btn span {
+    font-size: 9.5px;
   }
 
-  .stall-hint {
-    margin-top: 12px;
-    font-size: 11px;
-  }
+  .desktop-only { display: none !important; }
+  .stall-hint { display: none !important; }
+  .mobile-swipe-hint { display: inline-flex; }
 
   /* HUD Mobile */
   .hud-top-bar {
-    top: calc(10px + var(--sat));
-    left: calc(10px + var(--sal));
-    right: calc(10px + var(--sar));
-    gap: 8px;
+    top: calc(8px + var(--sat));
+    left: calc(8px + var(--sal));
+    right: calc(8px + var(--sar));
+    gap: 6px;
   }
   .hud-runner-pill {
     padding: 4px 8px;
@@ -1154,7 +1166,7 @@ kbd {
   }
   .stats-cluster { gap: 4px; }
   .st {
-    min-width: 58px;
+    min-width: 56px;
     padding: 4px 6px 5px;
     border-radius: 10px;
   }
@@ -1167,34 +1179,19 @@ kbd {
   }
   .target-box b { font-size: 11px; }
   .hud-btn {
-    width: 36px;
-    height: 36px;
-    font-size: 15px;
-    border-radius: 10px;
+    width: 34px;
+    height: 34px;
+    font-size: 14px;
+    border-radius: 9px;
   }
+  #hud-fs-btn { display: none !important; }
+
   #bf {
-    top: calc(82px + var(--sat));
-    left: calc(10px + var(--sal));
+    top: calc(76px + var(--sat));
+    left: calc(8px + var(--sal));
   }
   #bf span { font-size: 9px; padding: 4px 8px; }
 
-  /* Touch buttons on mobile */
-  .touch-btn {
-    width: 52px;
-    height: 52px;
-    border-radius: 14px;
-    font-size: 17px;
-  }
-  .touch-pad-left {
-    bottom: calc(14px + var(--sab));
-    left: calc(12px + var(--sal));
-    gap: 8px;
-  }
-  .touch-pad-right {
-    bottom: calc(14px + var(--sab));
-    right: calc(12px + var(--sar));
-    gap: 8px;
-  }
   #fvw {
     width: 90vw;
     bottom: calc(14px + var(--sab));

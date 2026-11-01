@@ -44,7 +44,6 @@
   <div class="arcade-tools">
     <button class="tool-btn" id="btn-top-lb"><span>CHAMPIONS</span> 🏆</button>
     <button class="tool-btn highlight" id="btn-guide"><span>GUIDE</span> ℹ️</button>
-    <button class="tool-btn" id="btn-kiosk-touch"><span>TOUCH</span> 📱</button>
     <button class="tool-btn" id="btn-fs"><span>FULLSCREEN</span> ⛶</button>
     <button class="tool-btn" id="top-mt">🔊</button>
   </div>
@@ -73,10 +72,10 @@
       <span class="cb-holder" id="record-holder">(Be First!)</span>
     </div>
 
-    <!-- Stall Play Now & Nickname Input -->
+    <!-- Play Now & Coder Handle Input -->
     <div class="start-box">
       <div class="field">
-        <label for="nick">CODER HANDLE</label>
+        <label for="nick" class="field-label">CODER HANDLE</label>
         <input id="nick" maxlength="12" placeholder="ENTER HANDLE" autocomplete="off" spellcheck="false">
       </div>
       <button class="btn-play-stall" id="play">
@@ -87,14 +86,17 @@
 
     <!-- Clean Quick Actions (Opens clean modals) -->
     <div class="quick-actions">
-      <button class="qa-btn" id="qa-guide">📖 HOW TO PLAY</button>
-      <button class="qa-btn" id="qa-lb">🏆 CAMPUS LEADERBOARD</button>
-      <button class="qa-btn" id="qa-qr">📱 JOIN GFG BU CHAPTER</button>
-      <button class="qa-btn" id="qa-next">👤 NEXT CODER</button>
+      <button class="qa-btn" id="qa-lb">🏆 <span>CAMPUS LEADERBOARD</span></button>
+      <button class="qa-btn" id="qa-guide">📖 <span>HOW TO PLAY</span></button>
+      <button class="qa-btn" id="qa-qr">📱 <span>JOIN GFG BU</span></button>
+      <button class="qa-btn desktop-only" id="qa-next">👤 <span>NEXT CODER</span></button>
     </div>
 
-    <div class="stall-hint">
+    <div class="stall-hint desktop-only">
       Press <kbd>Enter</kbd> to Rush · <kbd>←</kbd><kbd>→</kbd> Move · <kbd>↑</kbd> Jump · <kbd>↓</kbd> Slide
+    </div>
+    <div class="mobile-swipe-hint">
+      <span>⚡</span> SWIPE TO MOVE, JUMP & SLIDE
     </div>
   </div>
 </div>
@@ -134,18 +136,6 @@
     <span id="sy">&nbsp;</span>
     <i><u id="fv"></u></i>
     ALGORITHM FEVER
-  </div>
-
-  <!-- On-Screen Kiosk Touch Controls Overlay -->
-  <div id="touch-controls">
-    <div class="touch-pad-left">
-      <button class="touch-btn" id="btn-t-left">◀</button>
-      <button class="touch-btn" id="btn-t-right">▶</button>
-    </div>
-    <div class="touch-pad-right">
-      <button class="touch-btn jump" id="btn-t-jump">▲</button>
-      <button class="touch-btn slide" id="btn-t-slide">▼</button>
-    </div>
   </div>
 </div>
 

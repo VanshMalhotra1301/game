@@ -1068,24 +1068,55 @@ addEventListener('keydown', e => {
   }
 });
 
-let tx0 = null, ty0 = 0;
+// High-precision, zero-latency touch swipe gestures for mobile
+let tx0 = null, ty0 = null, tTime0 = 0;
+const SWIPE_THRESH = 20;
+
 addEventListener('touchstart', e => {
-  tx0 = e.touches[0].clientX;
-  ty0 = e.touches[0].clientY;
+  if (e.touches && e.touches.length > 0) {
+    tx0 = e.touches[0].clientX;
+    ty0 = e.touches[0].clientY;
+    tTime0 = performance.now();
+  }
 }, { passive: true });
 
 addEventListener('touchmove', e => {
-  if (st != 'play' || tx0 == null) return;
-  if (e.cancelable) e.preventDefault();
+  if (st !== 'play' || tx0 === null || ty0 === null) return;
   if (paused || S.ready > 0) return;
-  const dx = e.touches[0].clientX - tx0, dy = e.touches[0].clientY - ty0;
-  if (Math.max(Math.abs(dx), Math.abs(dy)) < 22) return;
-  if (Math.abs(dx) > Math.abs(dy)) mvL(dx > 0 ? 1 : -1);
-  else dy < 0 ? jump() : slide();
-  tx0 = null;
+  
+  const cx = e.touches[0].clientX;
+  const cy = e.touches[0].clientY;
+  const dx = cx - tx0;
+  const dy = cy - ty0;
+  const absX = Math.abs(dx);
+  const absY = Math.abs(dy);
+  
+  if (Math.max(absX, absY) >= SWIPE_THRESH) {
+    if (e.cancelable) e.preventDefault();
+    if (absX > absY) {
+      mvL(dx > 0 ? 1 : -1);
+    } else {
+      if (dy < 0) jump();
+      else slide();
+    }
+    tx0 = cx;
+    ty0 = cy;
+  }
 }, { passive: false });
 
-addEventListener('touchend', () => { tx0 = null; }, { passive: true });
+addEventListener('touchend', e => {
+  if (st === 'play' && tx0 !== null && ty0 !== null && !paused && S.ready <= 0) {
+    const elapsed = performance.now() - tTime0;
+    if (elapsed < 250 && e.changedTouches && e.changedTouches.length > 0) {
+      const dist = Math.hypot(e.changedTouches[0].clientX - tx0, e.changedTouches[0].clientY - ty0);
+      if (dist < 14) {
+        jump();
+      }
+    }
+  }
+  tx0 = null;
+  ty0 = null;
+}, { passive: true });
 
 function pause(p) {
   if (st != 'play') return;
@@ -1106,13 +1137,6 @@ function toggleFullscreen() {
   } else {
     if (document.exitFullscreen) document.exitFullscreen().catch(() => {});
   }
-}
-
-function toggleTouchControls() {
-  const tc = $('touch-controls');
-  tc.classList.toggle('active');
-  const on = tc.classList.contains('active');
-  $('btn-kiosk-touch').classList.toggle('highlight', on);
 }
 
 function nextRunner() {
@@ -1162,37 +1186,14 @@ $('pz').onclick = e => { if (e.target.id == 'pz') pause(false); };
 $('play').onclick = start;
 $('again').onclick = start;
 $('home').onclick = home;
-$('qa-next').onclick = nextRunner;
+if ($('qa-next')) $('qa-next').onclick = nextRunner;
 
 $('btn-fs').onclick = toggleFullscreen;
 $('hud-fs-btn').onclick = toggleFullscreen;
-$('btn-kiosk-touch').onclick = toggleTouchControls;
-
-// On-screen touch buttons for mobile & kiosks (pointerdown for zero latency)
-const bindTouch = (id, fn) => {
-  const el = $(id);
-  if (!el) return;
-  el.addEventListener('pointerdown', e => {
-    e.preventDefault();
-    e.stopPropagation();
-    fn();
-  }, { passive: false });
-};
-
-bindTouch('btn-t-left', () => mvL(-1));
-bindTouch('btn-t-right', () => mvL(1));
-bindTouch('btn-t-jump', jump);
-bindTouch('btn-t-slide', slide);
 
 document.addEventListener('visibilitychange', () => {
   if (document.hidden) pause(true);
 });
-
-// Auto-enable touch controls if touch device detected
-if (TOUCH) {
-  $('touch-controls').classList.add('active');
-  $('btn-kiosk-touch').classList.add('highlight');
-}
 
 // Initialise storage and start animation
 $('nick').value = LS.g('gfg_bennett_nick', '');
