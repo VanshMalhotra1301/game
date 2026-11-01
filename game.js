@@ -478,11 +478,21 @@ SF.position.set(0, .08, -30);
 SF.visible = false;
 sc.add(SF);
 
-/* ---------- GAME STATE & GENUINE LEADERBOARD ---------- */
+/* ---------- GAME STATE & PROGRESSIVE SPEED MILESTONES ---------- */
+const SPEED_MILESTONES = [
+  { score: 300, name: 'SPEED UP! ⚡ 1.2X' },
+  { score: 750, name: 'VELOCITY CRUISE! ⚡ 1.4X' },
+  { score: 1400, name: 'TURBO SPRINT! ⚡ 1.6X' },
+  { score: 2400, name: 'OVERCLOCK ENGAGED! ⚡ 1.8X' },
+  { score: 3800, name: 'LIGHTSPEED MATRIX! ⚡ 2.0X' },
+  { score: 5500, name: 'MAX FREQUENCY! ⚡ 2.2X' }
+];
+
 const newS = () => ({
   t: 0, dist: 0, bonus: 0, score: 0, coins: 0, lives: 0,
   sh: 0, inv: 0, queue: 0, bs: 0, mg: 0, fv: 0, fg: 0,
-  col: 0, sp: 16, wait: 0, nb: 1000, nc: 900,
+  col: 0, sp: 16.5, wait: 0, nb: 1000, nc: 900,
+  speedTier: 0,
   sym: { last: -1, n: 0 }, lane: 1, vy: 0, air: 0, sl: 0,
   bug: 0, shake: 0, rt: 0, safe: 1, ct: 0, ready: 0
 });
@@ -812,8 +822,11 @@ function step(dt) {
   }
   if (S.fv > 0) S.fv = Math.max(0, S.fv - dt);
 
-  const base = Math.min(36, 16 + S.dist * .0045 + (S.col > 0 ? 2 : 0));
-  const sp = S.sp = base * (S.queue > 0 ? 1.5 : 1);
+  // Progressive speed scaling (Subway Surfers & Temple Run model)
+  const scoreFactor = Math.min(18, Math.sqrt(Math.max(0, S.score)) * 0.28);
+  const distFactor = Math.min(3.5, S.dist * 0.0025);
+  const base = 16.5 + scoreFactor + distFactor + (S.col > 0 ? 2 : 0);
+  const sp = S.sp = Math.min(38, base * (S.queue > 0 ? 1.45 : 1));
   S.dist += sp * dt;
   if (S.fv > 0) S.bonus += sp * dt;
 
@@ -922,6 +935,15 @@ function step(dt) {
   // Milestones & score
   S.score = Math.floor(S.dist + S.bonus);
 
+  // Subway Surfers / Temple Run progressive speed milestones
+  if (S.speedTier < SPEED_MILESTONES.length && S.score >= SPEED_MILESTONES[S.speedTier].score) {
+    const tier = SPEED_MILESTONES[S.speedTier];
+    S.speedTier++;
+    ban(tier.name, '#00ff88');
+    flash('#00ff88');
+    snd(580 + S.speedTier * 120, .25, 'sine', .07, 260);
+  }
+
   if (S.score >= S.nc) {
     S.nc += 1400;
     S.col = 3; S.shake = 1;
@@ -1009,9 +1031,10 @@ function world(dt, sp) {
 
   if (S.fv > 0 && st == 'play') emit(P.position.x, .2, 0, 0x00ff88, 1);
 
-  // Smooth camera following
+  // Smooth camera following with dynamic speed FOV expansion
   const sh = S.shake * .5;
-  const tf = (cam.aspect < .8 ? 76 : 65) + (S.fv > 0 ? 8 : 0) + (S.queue > 0 ? 8 : 0);
+  const speedFov = Math.min(8, Math.max(0, (S.sp - 16.5) * 0.4));
+  const tf = (cam.aspect < .8 ? 76 : 65) + speedFov + (S.fv > 0 ? 8 : 0) + (S.queue > 0 ? 8 : 0);
   cam.fov += (tf - cam.fov) * Math.min(1, dt * 5);
   cam.updateProjectionMatrix();
 
